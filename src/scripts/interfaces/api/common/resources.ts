@@ -1,7 +1,4 @@
-export type ApiResource = {
-    url: string
-}
+import type { Resource, NamedResource } from '@scripts/interfaces/common/resources'
 
-export type ApiNamedResource = ApiResource & {
-    name: string
-}
+export type ApiResource = Resource
+export type ApiNamedResource = NamedResource

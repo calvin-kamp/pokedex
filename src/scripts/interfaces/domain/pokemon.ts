@@ -1,17 +1,13 @@
-export interface PokemonType {
+import type { NamedResource } from '@scripts/interfaces/common/resources'
+
+export interface PokemonType extends NamedResource {
     slot: number
-    name: string
-    url: string
 }
 
-export interface PokemonStat {
+export interface PokemonStat extends NamedResource {
     baseStat: number
-    name: string
-    url: string
 }
 
-export interface PokemonAbility {
+export interface PokemonAbility extends NamedResource {
     slot: number
-    name: string
-    url: string
 }

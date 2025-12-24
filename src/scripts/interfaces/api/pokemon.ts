@@ -1,6 +1,6 @@
 import type { ApiNamedResource } from '@scripts/interfaces/api/common/resources'
 
-interface Sprites {
+interface ApiPokemonSprites {
     front_default: string | null
 
     other?: {
@@ -39,7 +39,7 @@ export interface ApiPokemon {
     weight: number
     height: number
     species: ApiNamedResource
-    sprites: Sprites
+    sprites: ApiPokemonSprites
     stats: ApiStatEntry[]
     types: ApiTypeEntry[]
     abilities: ApiAbilityEntry[]

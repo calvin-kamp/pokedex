@@ -16,7 +16,7 @@ export type ApiNameEntry = {
     name: string
 }
 
-export type ApiGeneraEntry = {
+export type ApiGenusEntry = {
     language: ApiNamedResource
     genus: string
 }
@@ -29,6 +29,6 @@ export interface ApiSpecies {
     pokedex_numbers: ApiPokedexNumberEntry[]
     generation: ApiNamedResource
     flavor_text_entries: ApiFlavorTextEntry[]
-    genera: ApiGeneraEntry[]
+    genera: ApiGenusEntry[]
     names: ApiNameEntry[]
 }

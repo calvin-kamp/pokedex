@@ -1,25 +1,22 @@
-export interface SpeciesGenera {
-    genus: string
-    name: string
-    url: string
+import type { NamedResource } from '@scripts/interfaces/common/resources'
+
+export interface SpeciesPokedexNumberEntry {
+    entryNumber: number
+    pokedex: NamedResource
 }
 
-export interface SpeciesName {
-    name: string
-    languageName: string
-    languageUrl: string
+export interface SpeciesDescriptionEntry {
+    description: string
+    language: NamedResource
+    version: NamedResource
 }
 
-export interface SpeciesFlavorText {
-    flavorText: string
-    languageName: string
-    languageUrl: string
-    versionName: string
-    versionUrl: string
+export interface SpeciesCategoryEntry {
+    category: string
+    language: NamedResource
 }
 
-export interface SpeciesPokedexNumber {
-    number: number
+export interface SpeciesLocalizedNameEntry {
     name: string
-    url: string
+    language: NamedResource
 }
