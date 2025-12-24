@@ -12,7 +12,6 @@ export interface PokemonStat {
 
 export interface PokemonAbility {
     slot: number
-    isHidden: boolean
     name: string
     url: string
 }

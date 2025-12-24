@@ -1,4 +1,4 @@
-import type { ApiNamedResource } from '@scripts/interfaces/api/common/api-named-resource'
+import type { ApiNamedResource } from '@scripts/interfaces/api/common/resources'
 
 export interface ApiListResponse {
     count: number

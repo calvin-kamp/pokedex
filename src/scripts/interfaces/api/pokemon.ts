@@ -1,4 +1,4 @@
-import type { ApiNamedResource } from '@scripts/interfaces/api/common/api-named-resource'
+import type { ApiNamedResource } from '@scripts/interfaces/api/common/resources'
 
 interface Sprites {
     front_default: string | null
