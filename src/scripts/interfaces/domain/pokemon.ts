@@ -11,3 +11,16 @@ export interface PokemonStat extends NamedResource {
 export interface PokemonAbility extends NamedResource {
     slot: number
 }
+
+export interface Pokemon {
+    name: string
+    id: number
+    image: string
+    height: number
+    weight: number
+    types: PokemonType[]
+    stats: PokemonStat[]
+    abilities: PokemonAbility[]
+    speciesUrl: string
+    speciesName: string
+}
