@@ -1,0 +1,14 @@
+@use 'sass:map';
+@use 'sass:color';
+
+@use '@styles/utils' as *;
+
+/* Generates CSS variables for the light color scheme */
+:root {
+    @each $color, $color-value in map.get($colors, light) {
+        --color-#{'#{$color}'}: #{$color-value};
+        --color-#{'#{$color}'}-rgb: #{color.channel($color-value, 'red', $space: rgb)},
+            #{color.channel($color-value, 'green', $space: rgb)},
+            #{color.channel($color-value, 'blue', $space: rgb)};
+    }
+}

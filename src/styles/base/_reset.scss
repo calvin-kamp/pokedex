@@ -1,0 +1,135 @@
+/* -------------------------------------------------------- */
+/*                       RESET STYLES                       */
+/* -------------------------------------------------------- */
+
+/* Base Reset for common elements */
+html,
+body,
+div,
+span,
+iframe,
+h1,
+h2,
+h3,
+button,
+p,
+a,
+input,
+svg,
+main,
+img,
+strong,
+ul,
+li,
+fieldset,
+label,
+article,
+aside,
+figure,
+footer,
+header,
+nav,
+section {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    vertical-align: baseline;
+    background: transparent;
+    box-sizing: border-box;
+
+    &::before,
+    &::after {
+        box-sizing: inherit;
+    }
+}
+
+/* Block-level elements */
+/* Ensure proper block rendering in older browsers */
+main,
+section,
+article,
+aside,
+nav,
+footer,
+header,
+figure {
+    display: block;
+}
+
+/* Images */
+/* Ensure images are responsive */
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Fieldset */
+/* Remove default styles */
+fieldset {
+    min-width: 0;
+}
+
+/* Forms */
+/* Normalize input, button, textarea, select */
+input,
+button {
+    appearance: none;
+
+    &:focus,
+    &:focus-visible {
+        outline: 0;
+    }
+
+    &[disabled] {
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+}
+
+/* Links */
+/* Remove default styles */
+a {
+    text-decoration: none;
+    color: inherit;
+
+    &:focus,
+    &:hover,
+    &:active {
+        outline: none;
+    }
+}
+
+/* Buttons */
+/* Fix inner padding in older Firefox */
+button {
+    overflow: visible;
+
+    &::-moz-focus-inner {
+        border: 0;
+        padding: 0;
+    }
+}
+
+/* SVG */
+/* Prevent overflow issues */
+svg:not(:root) {
+    overflow: hidden;
+}
+
+/* HTML Adjustments */
+/* Optimize font rendering and prevent scaling */
+html {
+    font-size: 100%;
+    line-height: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+
+    /* Prevent mobile tap highlight */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}

@@ -1,0 +1,42 @@
+@use 'sass:map';
+
+@use '@styles/utils/config' as *;
+@use '@styles/utils/functions' as *;
+
+/* -------------------------------------------------------- */
+/*                       MEDIA MIXINS                       */
+/* -------------------------------------------------------- */
+
+// Adds a media query for a specified breakpoint size
+@mixin breakpoint($breakpoint) {
+    @if not map.has-key($breakpoints, $breakpoint) {
+        @error "Invalid breakpoint: '$breakpoint'. It must be one of the following: #{map.keys($breakpoints)}.";
+    }
+
+    @media screen and (min-width: get-min-width($breakpoint)) {
+        @content;
+    }
+}
+
+/* Applies a flexbox layout with customizable direction, wrap, justify, and align */
+@mixin flex(
+    $flex-direction: row,
+    $flex-wrap: wrap,
+    $justify-content: flex-start,
+    $align-items: stretch
+) {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-direction: $flex-direction;
+    -ms-flex-direction: $flex-direction;
+    flex-direction: $flex-direction;
+
+    -webkit-flex-wrap: $flex-wrap;
+    -ms-flex-wrap: $flex-wrap;
+    flex-wrap: $flex-wrap;
+
+    justify-content: $justify-content;
+    align-items: $align-items;
+}

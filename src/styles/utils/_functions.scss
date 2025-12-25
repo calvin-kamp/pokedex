@@ -1,0 +1,20 @@
+@use 'sass:map';
+@use 'sass:meta';
+@use 'sass:math';
+@use 'sass:string';
+
+@use '@styles/utils/config' as *;
+
+/* -------------------------------------------------------- */
+/*                         FUNCTIONS                        */
+/* -------------------------------------------------------- */
+
+// Get the minimum width for a breakpoint
+@function get-min-width($breakpoint) {
+    @return map.get($breakpoints, $breakpoint);
+}
+
+// Convert pixel values to rem units
+@function get-rem($pixels, $font-size-base: 16px) {
+    @return math.div($pixels, $font-size-base) * 1rem;
+}

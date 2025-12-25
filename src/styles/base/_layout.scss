@@ -1,0 +1,42 @@
+@use 'sass:meta';
+
+@use '@styles/utils/config' as *;
+@use '@styles/utils/functions' as *;
+@use '@styles/utils/mixins' as *;
+
+/* Base container styles */
+.container {
+    width: 100%;
+    max-width: $container-max-width;
+    padding: 0 $container-padding;
+    margin: 0 auto;
+}
+
+/* Base styles for flex containers */
+.row {
+    margin: 0 -#{$col-padding};
+    @include flex();
+
+    /* Generate column classes based on grid columns */
+    @for $i from 1 through $grid-columns {
+        /* Standard column */
+        .col-#{$i} {
+            width: grid-size($i);
+            padding: 0 $col-padding;
+        }
+    }
+    /* Responsive column logic for specific breakpoints */
+    @each $breakpoint, $width in $breakpoints {
+        @if $breakpoint != 'xs' {
+            @include breakpoint($breakpoint) {
+                @for $i from 1 through $grid-columns {
+                    /* Responsive column */
+                    .col-#{$breakpoint}-#{$i} {
+                        width: grid-size($i);
+                        padding: 0 $col-padding;
+                    }
+                }
+            }
+        }
+    }
+}
