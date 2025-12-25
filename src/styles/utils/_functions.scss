@@ -14,6 +14,15 @@
     @return map.get($breakpoints, $breakpoint);
 }
 
+// Calculate percentage width for grid columns
+@function grid-size($size) {
+    @if $size == null or meta.type-of($size) != 'number' or $size <= 0 or $size > $grid-columns {
+        @error "Invalid size: '$size'. It must be a number between 1 and #{$grid-columns}.";
+    }
+
+    @return math.percentage(math.div($size, $grid-columns));
+}
+
 // Convert pixel values to rem units
 @function get-rem($pixels, $font-size-base: 16px) {
     @return math.div($pixels, $font-size-base) * 1rem;
