@@ -20,3 +20,15 @@ export interface SpeciesLocalizedNameEntry {
     name: string
     language: NamedResource
 }
+
+export interface Species {
+    name: string
+    id: number
+    evolutionChainUrl: string
+    evolvesFromSpeciesUrl: string | undefined
+    pokedexNumbers: SpeciesPokedexNumberEntry[]
+    generationName: string
+    generationUrl: string
+    categories: SpeciesCategoryEntry[]
+    localizedNames: SpeciesLocalizedNameEntry[]
+}
