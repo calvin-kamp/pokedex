@@ -5,12 +5,20 @@ import type {
     ApiTypeEntry,
 } from '@scripts/interfaces/api/pokemon'
 
-import type { PokemonAbility, PokemonStat, PokemonType } from '@scripts/interfaces/domain/pokemon'
+import type {
+    PokemonAbility,
+    PokemonStat,
+    PokemonType,
+    Pokemon,
+} from '@scripts/interfaces/domain/pokemon'
+import type { NamedResource } from '../interfaces/common/resources'
 
-export class PokemonModel {
+export class PokemonModel implements Pokemon {
     private pokemon: ApiPokemon
+    private species: NamedResource
     constructor(data: ApiPokemon) {
         this.pokemon = data
+        this.species = this.pokemon.species
     }
 
     get name(): string {
@@ -60,7 +68,11 @@ export class PokemonModel {
     }
 
     get speciesUrl(): string {
-        return this.pokemon.species.url
+        return this.species.url
+    }
+
+    get speciesName(): string {
+        return this.species.name
     }
 
     private toType = (entry: ApiTypeEntry): PokemonType => {
