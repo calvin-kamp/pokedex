@@ -11,13 +11,17 @@ import type {
     SpeciesDescriptionEntry,
     SpeciesCategoryEntry,
     SpeciesLocalizedNameEntry,
+    Species,
 } from '@scripts/interfaces/domain/species'
+import type { NamedResource } from '../interfaces/common/resources'
 
-export class SpeciesModel {
+export class SpeciesModel implements Species {
     private species: ApiSpecies
+    private generation: NamedResource
 
     constructor(data: ApiSpecies) {
         this.species = data
+        this.generation = this.species.generation
     }
 
     get name(): string {
@@ -42,11 +46,11 @@ export class SpeciesModel {
     }
 
     get generationName(): string {
-        return this.species.generation.name
+        return this.generation.name
     }
 
     get generationUrl(): string {
-        return this.species.generation.url
+        return this.generation.url
     }
 
     get descriptions(): SpeciesDescriptionEntry[] {
