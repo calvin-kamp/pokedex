@@ -13,7 +13,9 @@ import type {
     SpeciesLocalizedNameEntry,
     Species,
 } from '@scripts/interfaces/domain/species'
-import type { NamedResource } from '../interfaces/common/resources'
+
+import type { NamedResource } from '@scripts/interfaces/common/resources'
+import { languageStore } from '@scripts/stores/language-store'
 
 export class SpeciesModel implements Species {
     private species: ApiSpecies
@@ -63,9 +65,14 @@ export class SpeciesModel implements Species {
         return apiEntries.map((entry) => this.toCategory(entry))
     }
 
-    get localizedNames(): SpeciesLocalizedNameEntry[] {
-        const apiEntries: ApiNameEntry[] = this.species.names ?? []
-        return apiEntries.map((entry) => this.toLocalizedName(entry))
+    get localizedName(): string {
+        const lang = languageStore.getLanguage()
+
+        const entry = (this.species.names ?? [])
+            .map((e) => this.toLocalizedName(e))
+            .find((e) => e.language.name === lang)
+
+        return entry?.name ?? this.species.name
     }
 
     private toPokedexNumber(entry: ApiPokedexNumberEntry): SpeciesPokedexNumberEntry {
