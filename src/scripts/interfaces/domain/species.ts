@@ -30,5 +30,5 @@ export interface Species {
     generationName: string
     generationUrl: string
     categories: SpeciesCategoryEntry[]
-    localizedNames: SpeciesLocalizedNameEntry[]
+    localizedName: string
 }
