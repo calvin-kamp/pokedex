@@ -33,6 +33,14 @@
         width: grid-size($i);
         padding: 0 $col-padding;
     }
+
+    .col-left-#{$i} {
+        margin-left: grid-size($i);
+    }
+
+    .col-right-#{$i} {
+        margin-right: grid-size($i);
+    }
 }
 /* Responsive column logic for specific breakpoints */
 @each $breakpoint, $width in $breakpoints {
@@ -43,6 +51,14 @@
                 .col-#{$breakpoint}-#{$i} {
                     width: grid-size($i);
                     padding: 0 $col-padding;
+                }
+
+                .col-#{$breakpoint}-left-#{$i} {
+                    margin-left: grid-size($i);
+                }
+
+                .col-#{$breakpoint}-right-#{$i} {
+                    margin-right: grid-size($i);
                 }
             }
         }

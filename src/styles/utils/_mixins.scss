@@ -18,6 +18,13 @@
     }
 }
 
+// Adds a media query for a specified custom minimum width
+@mixin manual-breakpoint($breakpoint-min-width) {
+    @media screen and (min-width: $breakpoint-min-width) {
+        @content;
+    }
+}
+
 /* Applies a flexbox layout with customizable direction, wrap, justify, and align */
 @mixin flex(
     $flex-direction: row,

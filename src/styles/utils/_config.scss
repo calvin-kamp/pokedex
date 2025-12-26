@@ -35,6 +35,8 @@ $colors: (
         ui-success: #008000,
         ui-success-hover: #006400,
 
+        card-background: #353535,
+
         body-font: #ffffff,
         body-background: #1c1a17,
 
@@ -139,3 +141,7 @@ $z-index-8: 800;
 $z-index-9: 900;
 
 $transition-time: 0.4s;
+
+$header-height-mobile: 80px;
+$header-height-tablet: 80px;
+$header-height-desktop: 80px;
