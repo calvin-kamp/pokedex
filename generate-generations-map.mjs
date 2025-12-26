@@ -4,13 +4,15 @@ const CONFIG = {
     backoffBaseMs: 500,
 }
 
+const LIST_URL = 'https://pokeapi.co/api/v2/generation?limit=1000'
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 async function fetchJson(url, { retries = CONFIG.retries } = {}) {
     for (let attempt = 0; attempt <= retries; attempt++) {
         try {
             const res = await fetch(url, {
-                headers: { 'User-Agent': 'pokemon-name-map-generator' },
+                headers: { 'User-Agent': 'poke-maps-generator' },
             })
 
             if (res.status === 429) {
@@ -28,9 +30,7 @@ async function fetchJson(url, { retries = CONFIG.retries } = {}) {
             if (attempt === retries) {
                 throw err
             }
-
-            const backoff = CONFIG.backoffBaseMs * (attempt + 1)
-            await sleep(backoff)
+            await sleep(CONFIG.backoffBaseMs * (attempt + 1))
         }
     }
 
@@ -63,13 +63,13 @@ function pickName(names, lang) {
 
 async function main() {
     const list = await fetchJson(LIST_URL)
-    const speciesRefs = list?.results || []
+    const refs = list?.results || []
 
     const mapping = {
         meta: {
             generatedAt: new Date().toISOString(),
             source: 'https://pokeapi.co/',
-            total: speciesRefs.length,
+            total: refs.length,
         },
         byId: {},
         bySlug: {},
@@ -78,15 +78,15 @@ async function main() {
     let done = 0
 
     await runPool(
-        speciesRefs,
+        refs,
         async (ref) => {
-            const species = await fetchJson(ref.url)
+            const data = await fetchJson(ref.url)
 
-            const id = species.id
-            const slug = species.name
+            const id = data.id
+            const slug = data.name
 
-            const de = pickName(species.names, 'de')
-            const en = pickName(species.names, 'en')
+            const de = pickName(data.names, 'de')
+            const en = pickName(data.names, 'en')
 
             mapping.byId[String(id)] = {
                 slug,
@@ -101,8 +101,8 @@ async function main() {
             }
 
             done++
-            if (done % 50 === 0) {
-                process.stderr.write(`Progress: ${done}/${speciesRefs.length}\n`)
+            if (done % 10 === 0) {
+                process.stderr.write(`Progress: ${done}/${refs.length}\n`)
             }
 
             return true
