@@ -1,5 +1,6 @@
 import { languageStore } from '@scripts/stores/language-store'
 import { applyLocale } from '@scripts/i18n/i18n-runtime'
+import { pokedex } from '@scripts/components/pokedex'
 import type { LanguageSwitch } from '@scripts/interfaces/components/language-switch'
 
 export const languageSwitch: LanguageSwitch = {
@@ -39,6 +40,7 @@ export const languageSwitch: LanguageSwitch = {
                 }
 
                 this.setSelectedLanguage($langSwitch)
+                pokedex.reloadPokemons()
             })
         }
     },
