@@ -32,7 +32,7 @@ export interface Search {
     ): void
     submitSearch($searchInput: HTMLInputElement): void
     triggerSearch($searchInput: HTMLInputElement): void
-    resetSearchIfNeeded(): void
+    resetSearch(): void
     hideSearchBar($search: HTMLElement): void
     showSearchBar($search: HTMLElement): void
     loadSearchResults(searchQuery: string): void
