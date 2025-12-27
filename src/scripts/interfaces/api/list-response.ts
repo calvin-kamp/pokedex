@@ -1,8 +1,8 @@
 import type { ApiNamedResource } from '@scripts/interfaces/api/common/resources'
 
-export interface ApiListResponse {
+export interface ApiListResponse<T = ApiNamedResource> {
     count: number
     next: string | null
     previous: string | null
-    results: ApiNamedResource[]
+    results: T[]
 }
