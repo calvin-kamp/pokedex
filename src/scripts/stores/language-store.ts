@@ -1,27 +1,17 @@
 import { localStorageHelper } from '@scripts/utils/local-storage-helper'
+import type { Language } from '@scripts/interfaces/stores/language'
 
 export const languageStore = {
     vars: {
-        defaultLanguage: 'en',
+        defaultLanguage: 'en' as Language,
+        storageKey: 'language',
     },
 
-    setLanguage(language: string) {
-        localStorageHelper.setItem('language', language)
+    setLanguage(language: Language): void {
+        localStorageHelper.setItem(this.vars.storageKey, language)
     },
 
-    getLanguage() {
-        const language = localStorage.getItem('language')
-
-        if (!language) {
-            this.setLanguage(this.vars.defaultLanguage)
-            return this.vars.defaultLanguage
-        }
-
-        try {
-            return JSON.parse(language)
-        } catch {
-            this.setLanguage(this.vars.defaultLanguage)
-            return this.vars.defaultLanguage
-        }
+    getLanguage(): Language {
+        return localStorageHelper.getItem<Language>(this.vars.storageKey, this.vars.defaultLanguage)
     },
 }
