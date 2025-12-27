@@ -18,6 +18,10 @@ export const search = {
 
         windowWidth: 0,
         timeOut: undefined as number | undefined,
+
+        state: {
+            lastQuery: '',
+        },
     },
 
     init() {
@@ -75,6 +79,7 @@ export const search = {
         $searchInput.value = ''
         $searchInput.blur()
 
+        this.resetSearch()
         this.hideSearchBar($search)
     },
 
@@ -84,6 +89,7 @@ export const search = {
         const searchQuery = $searchInput.value.trim()
 
         if (searchQuery.length < 3) {
+            this.resetSearch()
             return
         }
 
@@ -117,11 +123,22 @@ export const search = {
 
     triggerSearch($searchInput: HTMLInputElement): void {
         const searchQuery = $searchInput.value.trim()
+
         if (searchQuery.length < 3) {
             return
         }
 
+        this.vars.state.lastQuery = searchQuery
         this.loadSearchResults(searchQuery)
+    },
+
+    resetSearch(): void {
+        if (this.vars.state.lastQuery.length === 0) {
+            return
+        }
+
+        this.vars.state.lastQuery = ''
+        pokedex.reloadPokemons()
     },
 
     hideSearchBar($search: HTMLElement) {
@@ -149,8 +166,8 @@ export const search = {
             return value.includes(searchQuery.toLowerCase())
         })
 
-        const ids = hits.map((h) => {
-            return h.id
+        const ids = hits.map((hit) => {
+            return hit.id
         })
 
         pokedex.loadPokemonsByIds(ids, { append: false })
