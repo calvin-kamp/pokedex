@@ -26,6 +26,7 @@
 
         "paths": {
             "@root/*": ["./src/*"],
+            "@json/*": ["./src/json/*"],
             "@styles/*": ["./src/styles/*"],
             "@scripts/*": ["./src/scripts/*"]
         }
