@@ -1,19 +1,14 @@
 import { fetchPokemonList, fetchPokemon } from '@scripts/api/pokemon.api'
 import { PokemonModel } from '@scripts/models/pokemon-model'
 import { fetchSpecies } from '@scripts/api/species.api'
-import { fetchTypes } from '@scripts/api/types.api'
+import { fetchType } from '@scripts/api/type.api'
 import { TypeModel } from '@scripts/models/type-model'
 import { pokemonCardTemplate } from '@scripts/templates/pokemon-card'
 import { SpeciesModel } from '@scripts/models/species-model'
 import { pokemonDialog } from '@scripts/components/pokemon-dialog'
+import type { Pokedex, PokemonCardData } from '@scripts/interfaces/components/pokedex'
 
-type PokemonCardData = {
-    pokemon: PokemonModel
-    species: SpeciesModel
-    types: TypeModel[]
-}
-
-export const pokedex = {
+export const pokedex: Pokedex = {
     vars: {
         queries: {
             component: '*[data-component=pokedex]',
@@ -76,7 +71,17 @@ export const pokedex = {
                 return
             }
 
-            pokemonDialog.openDialog(pokemonId)
+            const pokemonIds = Array.from(
+                $pokedexList.querySelectorAll<HTMLElement>(`*[${this.vars.attributes.pokemonId}]`)
+            )
+                .map((el) => {
+                    return Number(el.getAttribute(this.vars.attributes.pokemonId))
+                })
+                .filter((id) => {
+                    return Number.isFinite(id) && id > 0
+                })
+
+            pokemonDialog.openDialog(pokemonId, pokemonIds)
         })
     },
 
@@ -109,42 +114,37 @@ export const pokedex = {
         }
 
         fetchPokemonList(endpoint)
-            .then((pokemonList) => {
-                return Promise.all(pokemonList.results.map((pokemon) => fetchPokemon(pokemon.url)))
-            })
-            .then((pokemonsData) => {
-                return Promise.all(
+            .then((pokemonList) => Promise.all(pokemonList.results.map((p) => fetchPokemon(p.url))))
+            .then((pokemonsData) =>
+                Promise.all(
                     pokemonsData.map((pokemonData) => {
                         const pokemon = new PokemonModel(pokemonData)
 
-                        const speciesPromise = fetchSpecies(pokemon.id).then((speciesData) => {
-                            return new SpeciesModel(speciesData)
-                        })
+                        const speciesPromise = fetchSpecies(pokemon.id).then(
+                            (speciesData) => new SpeciesModel(speciesData)
+                        )
 
                         const typesPromise = Promise.all(
-                            pokemon.types.map((t) => {
-                                return fetchTypes(t.url).then((typeData) => {
-                                    return new TypeModel(typeData)
-                                })
-                            })
+                            pokemon.types.map((t) =>
+                                fetchType(t.url).then((typeData) => new TypeModel(typeData))
+                            )
                         )
 
                         return Promise.all([speciesPromise, typesPromise]).then(
-                            ([species, types]): PokemonCardData => {
-                                return { pokemon, species, types }
-                            }
+                            ([species, types]): PokemonCardData => ({ pokemon, species, types })
                         )
                     })
                 )
-            })
+            )
             .then((cards) => {
                 this.renderPokemonCards(cards, { append, $pokedexList })
 
                 if (append) {
                     this.vars.api.offset += cards.length
-                } else {
-                    this.vars.api.offset = cards.length
+                    return
                 }
+
+                this.vars.api.offset = cards.length
             })
             .catch((err) => {
                 console.error(err)
@@ -199,31 +199,27 @@ export const pokedex = {
         }
 
         Promise.all(ids.map((id) => fetchPokemon(`pokemon/${id}`)))
-            .then((pokemonsData) => {
-                return Promise.all(
+            .then((pokemonsData) =>
+                Promise.all(
                     pokemonsData.map((pokemonData) => {
                         const pokemon = new PokemonModel(pokemonData)
 
-                        const speciesPromise = fetchSpecies(pokemon.id).then((speciesData) => {
-                            return new SpeciesModel(speciesData)
-                        })
+                        const speciesPromise = fetchSpecies(pokemon.id).then(
+                            (speciesData) => new SpeciesModel(speciesData)
+                        )
 
                         const typesPromise = Promise.all(
-                            pokemon.types.map((t) => {
-                                return fetchTypes(t.url).then((typeData) => {
-                                    return new TypeModel(typeData)
-                                })
-                            })
+                            pokemon.types.map((t) =>
+                                fetchType(t.url).then((typeData) => new TypeModel(typeData))
+                            )
                         )
 
                         return Promise.all([speciesPromise, typesPromise]).then(
-                            ([species, types]): PokemonCardData => {
-                                return { pokemon, species, types }
-                            }
+                            ([species, types]): PokemonCardData => ({ pokemon, species, types })
                         )
                     })
                 )
-            })
+            )
             .then((cards) => {
                 this.renderPokemonCards(cards, { append, $pokedexList })
             })
