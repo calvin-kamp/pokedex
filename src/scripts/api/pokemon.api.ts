@@ -1,17 +1,19 @@
 import { fetchJson } from '@scripts/api/fetch-json'
-import type { ApiListResponse } from '@scripts/interfaces/api/list-response'
 import type { ApiPokemon } from '@scripts/interfaces/api/pokemon'
+import type { ApiListResponse } from '@scripts/interfaces/api/list-response'
 
-export const fetchPokemonList = async (endpoint: string = 'pokemon'): Promise<ApiListResponse> => {
-    const baseUrl: string = import.meta.env.VITE_POKEAPI_BASE_URL
-    const apiUrl: string = endpoint.startsWith('https') ? endpoint : `${baseUrl}/${endpoint}`
-
-    return fetchJson<ApiListResponse>(apiUrl)
+export const fetchPokemonList = async (
+    endpoint: string = 'pokemon',
+    init?: RequestInit
+): Promise<ApiListResponse> => {
+    return fetchJson<ApiListResponse>(endpoint, init)
 }
 
-export const fetchPokemon = async (endpoint: string): Promise<ApiPokemon> => {
-    const baseUrl: string = import.meta.env.VITE_POKEAPI_BASE_URL
-    const apiUrl: string = endpoint.startsWith('https') ? endpoint : `${baseUrl}/${endpoint}`
+export const fetchPokemon = async (
+    endpointOrId: string | number,
+    init?: RequestInit
+): Promise<ApiPokemon> => {
+    const apiUrl = typeof endpointOrId === 'number' ? `pokemon/${endpointOrId}` : endpointOrId
 
-    return fetchJson<ApiPokemon>(apiUrl)
+    return fetchJson<ApiPokemon>(apiUrl, init)
 }

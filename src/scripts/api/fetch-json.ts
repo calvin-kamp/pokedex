@@ -1,20 +1,19 @@
-export const fetchJson = async <T>(endpoint: string = 'pokemon'): Promise<T> => {
-    const baseUrl: string = import.meta.env.VITE_POKEAPI_BASE_URL
-    const apiUrl: string = endpoint?.startsWith('https') ? endpoint : `${baseUrl}/${endpoint}`
+export const fetchJson = async <T>(endpoint: string, init?: RequestInit): Promise<T> => {
+    const baseUrl: string = String(import.meta.env.VITE_POKEAPI_BASE_URL ?? '').replace(/\/+$/, '')
+    const clean = String(endpoint ?? '').replace(/^\/+/, '')
+    const apiUrl = clean.startsWith('http') ? clean : `${baseUrl}/${clean}`
 
     try {
-        const response: Response = await fetch(apiUrl)
+        const response = await fetch(apiUrl, init)
 
         if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`)
+            throw new Error(
+                `Response status: ${response.status} (${response.statusText}) for ${apiUrl}`
+            )
         }
 
-        const result: T = await response.json()
-
-        return result
+        return (await response.json()) as T
     } catch (error) {
         console.error(error)
-
-        throw error
     }
 }
