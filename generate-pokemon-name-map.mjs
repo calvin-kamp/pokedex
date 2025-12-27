@@ -1,8 +1,15 @@
+// generate-pokemon-name-map.mjs
+import fs from 'node:fs'
+import path from 'node:path'
+
 const CONFIG = {
     concurrency: 8,
     retries: 5,
     backoffBaseMs: 500,
 }
+
+const LIST_URL = 'https://pokeapi.co/api/v2/pokemon-species?limit=2000'
+const OUT_FILE = path.resolve('src/json/pokemon-name-map.json')
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -110,7 +117,9 @@ async function main() {
         CONFIG.concurrency
     )
 
-    process.stdout.write(JSON.stringify(mapping, null, 2))
+    fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true })
+    fs.writeFileSync(OUT_FILE, JSON.stringify(mapping, null, 2), 'utf8')
+    process.stderr.write(`Wrote: ${OUT_FILE}\n`)
 }
 
 main().catch((err) => {
