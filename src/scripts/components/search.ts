@@ -1,8 +1,9 @@
 import nameMap from '@json/pokemon-name-map.json'
 import { languageStore } from '@scripts/stores/language-store'
 import { pokedex } from '@scripts/components/pokedex'
+import type { Search } from '@scripts/interfaces/components/search'
 
-export const search = {
+export const search: Search = {
     vars: {
         queries: {
             component: '*[data-component=search]',
