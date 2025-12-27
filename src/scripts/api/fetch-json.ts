@@ -15,5 +15,6 @@ export const fetchJson = async <T>(endpoint: string, init?: RequestInit): Promis
         return (await response.json()) as T
     } catch (error) {
         console.error(error)
+        throw error
     }
 }
