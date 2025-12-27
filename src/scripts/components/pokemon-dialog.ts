@@ -1,4 +1,11 @@
-import type { PokemonDialog } from '@scripts/interfaces/components/pokemon-dialog'
+import type {
+    PokemonDialog,
+    PokemonDialogData,
+} from '@scripts/interfaces/components/pokemon-dialog'
+import { fetchPokemon } from '@scripts/api/pokemon.api'
+import { PokemonModel } from '@scripts/models/pokemon-model'
+import { fetchType } from '@scripts/api/type.api'
+import { TypeModel } from '@scripts/models/type-model'
 import { fetchSpecies } from '@scripts/api/species.api'
 import { SpeciesModel } from '@scripts/models/species-model'
 import { fetchEvolutionChain } from '@scripts/api/evolution-chain.api'
@@ -13,8 +20,10 @@ export const pokemonDialog: PokemonDialog = {
             closeButton: '*[data-pokemon-dialog-close]',
             prevButton: '*[data-pokemon-dialog-previous]',
             nextButton: '*[data-pokemon-dialog-next]',
-            pokedexList: '*[data-pokedex-list]',
-            pokemonIdAttr: 'data-pokemon-id',
+        },
+
+        attributes: {
+            pokemonId: 'data-pokemon-id',
         },
 
         pokemonId: 0,
@@ -33,24 +42,12 @@ export const pokemonDialog: PokemonDialog = {
         this.addEventTrigger($pokemonDialog)
     },
 
-    getVisiblePokemonIds(): number[] {
-        const $list = document.querySelector<HTMLElement>(this.vars.queries.pokedexList)
+    setPokemonIds(pokemonIds: number[]): void {
+        const unique = Array.from(new Set(pokemonIds)).filter((id) => {
+            return Number.isFinite(id) && id > 0
+        })
 
-        if (!$list) {
-            return []
-        }
-
-        const ids = Array.from(
-            $list.querySelectorAll<HTMLElement>(`*[${this.vars.queries.pokemonIdAttr}]`)
-        )
-            .map((el) => {
-                return Number(el.getAttribute(this.vars.queries.pokemonIdAttr))
-            })
-            .filter((id) => {
-                return Number.isFinite(id) && id > 0
-            })
-
-        return Array.from(new Set(ids))
+        this.vars.pokemonIds = unique
     },
 
     getNeighborIds(currentId: number): { prevId: number | null; nextId: number | null } {
@@ -58,13 +55,7 @@ export const pokemonDialog: PokemonDialog = {
         const index = ids.indexOf(currentId)
 
         if (index === -1) {
-            const prevFallback = currentId - 1
-            const nextFallback = currentId + 1
-
-            return {
-                prevId: prevFallback >= 1 ? prevFallback : null,
-                nextId: nextFallback,
-            }
+            return { prevId: null, nextId: null }
         }
 
         const prevId = index > 0 ? ids[index - 1] : null
@@ -85,20 +76,20 @@ export const pokemonDialog: PokemonDialog = {
 
         if ($prevBtn) {
             if (prevId) {
-                $prevBtn.setAttribute(this.vars.queries.pokemonIdAttr, String(prevId))
+                $prevBtn.setAttribute(this.vars.attributes.pokemonId, String(prevId))
                 $prevBtn.disabled = false
             } else {
-                $prevBtn.removeAttribute(this.vars.queries.pokemonIdAttr)
+                $prevBtn.removeAttribute(this.vars.attributes.pokemonId)
                 $prevBtn.disabled = true
             }
         }
 
         if ($nextBtn) {
             if (nextId) {
-                $nextBtn.setAttribute(this.vars.queries.pokemonIdAttr, String(nextId))
+                $nextBtn.setAttribute(this.vars.attributes.pokemonId, String(nextId))
                 $nextBtn.disabled = false
             } else {
-                $nextBtn.removeAttribute(this.vars.queries.pokemonIdAttr)
+                $nextBtn.removeAttribute(this.vars.attributes.pokemonId)
                 $nextBtn.disabled = true
             }
         }
@@ -139,9 +130,9 @@ export const pokemonDialog: PokemonDialog = {
             return
         }
 
-        const prevId = Number($prevBtn.getAttribute(this.vars.queries.pokemonIdAttr))
+        const prevId = Number($prevBtn.getAttribute(this.vars.attributes.pokemonId))
 
-        if (!prevId || prevId < 1) {
+        if (!prevId) {
             return
         }
 
@@ -157,7 +148,7 @@ export const pokemonDialog: PokemonDialog = {
             return
         }
 
-        const nextId = Number($nextBtn.getAttribute(this.vars.queries.pokemonIdAttr))
+        const nextId = Number($nextBtn.getAttribute(this.vars.attributes.pokemonId))
 
         if (!nextId) {
             return
@@ -167,10 +158,6 @@ export const pokemonDialog: PokemonDialog = {
     },
 
     navigateTo($pokemonDialog: HTMLDialogElement, pokemonId: number): void {
-        if (!this.vars.pokemonIds.length) {
-            this.vars.pokemonIds = this.getVisiblePokemonIds()
-        }
-
         this.vars.pokemonId = pokemonId
         this.setAttributes($pokemonDialog)
         this.loadPokemonData($pokemonDialog, pokemonId)
@@ -185,25 +172,60 @@ export const pokemonDialog: PokemonDialog = {
 
         $content.innerHTML = ''
 
-        fetchSpecies(pokemonId)
-            .then((speciesData) => {
-                const species = new SpeciesModel(speciesData)
+        fetchPokemon(`pokemon/${pokemonId}`)
+            .then((pokemonData) => {
+                const pokemon = new PokemonModel(pokemonData)
 
-                return fetchEvolutionChain(species.evolutionChainUrl).then((evolutionChainData) => {
-                    const evolutionChain = new EvolutionChainModel(evolutionChainData)
+                const typesPromise = Promise.all(
+                    pokemon.types.map((t) => {
+                        return fetchType(t.url).then((typeData) => {
+                            return new TypeModel(typeData)
+                        })
+                    })
+                )
 
-                    const templateEl = document.createElement('template')
-                    templateEl.innerHTML = pokemonDetailTemplate(species, evolutionChain)
-
-                    $content.appendChild(templateEl.content.cloneNode(true))
+                const speciesPromise = fetchSpecies(pokemonId).then((speciesData) => {
+                    return new SpeciesModel(speciesData)
                 })
+
+                Promise.all([typesPromise, speciesPromise])
+                    .then(([types, species]) => {
+                        fetchEvolutionChain(species.evolutionChainUrl)
+                            .then((evolutionChainData) => {
+                                const evolutionChain = new EvolutionChainModel(evolutionChainData)
+
+                                const dialogData: PokemonDialogData = {
+                                    pokemon,
+                                    species,
+                                    types,
+                                    evolutionChain,
+                                }
+
+                                const templateEl = document.createElement('template')
+
+                                templateEl.innerHTML = pokemonDetailTemplate(
+                                    dialogData.pokemon,
+                                    dialogData.species,
+                                    dialogData.evolutionChain,
+                                    dialogData.types
+                                )
+
+                                $content.appendChild(templateEl.content.cloneNode(true))
+                            })
+                            .catch((error) => {
+                                console.error(error)
+                            })
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                    })
             })
             .catch((error) => {
                 console.error(error)
             })
     },
 
-    openDialog(id: number): void {
+    openDialog(id: number, pokemonIds: number[]): void {
         const $pokemonDialog = document.querySelector<HTMLDialogElement>(
             this.vars.queries.component
         )
@@ -212,7 +234,7 @@ export const pokemonDialog: PokemonDialog = {
             return
         }
 
-        this.vars.pokemonIds = this.getVisiblePokemonIds()
+        this.setPokemonIds(pokemonIds)
         this.navigateTo($pokemonDialog, id)
 
         $pokemonDialog.showModal()
