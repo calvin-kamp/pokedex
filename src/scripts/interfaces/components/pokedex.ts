@@ -18,6 +18,10 @@ export interface Pokedex {
             loadMoreButton: string
         }
 
+        classes: {
+            searchMode: string
+        }
+
         attributes: {
             pokemonId: string
         }
@@ -33,6 +37,8 @@ export interface Pokedex {
 
     init(): void
     addEventTrigger($pokedex: HTMLElement): void
+    setSearchMode(isActive: boolean): void
+    renderNoResults(): void
     loadMorePokemons(): void
     loadPokemonData(endpoint: string, options?: { append?: boolean }): void
     renderPokemonCards(

@@ -6,7 +6,13 @@ import { TypeModel } from '@scripts/models/type-model'
 import { pokemonCardTemplate } from '@scripts/templates/pokemon-card'
 import { SpeciesModel } from '@scripts/models/species-model'
 import { pokemonDialog } from '@scripts/components/pokemon-dialog'
+import { loadingSpinner } from '@scripts/components/loading-spinner'
+import { applyLocale } from '@scripts/i18n/i18n-runtime'
+import { languageStore } from '@scripts/stores/language-store'
 import type { Pokedex, PokemonCardData } from '@scripts/interfaces/components/pokedex'
+
+const delay = (ms: number): Promise<void> =>
+    new Promise((resolve) => window.setTimeout(resolve, ms))
 
 export const pokedex: Pokedex = {
     vars: {
@@ -16,6 +22,10 @@ export const pokedex: Pokedex = {
             pokemonCard: '*[data-component=pokemon]',
             openDialogButton: '*[data-pokemon-id]',
             loadMoreButton: '*[data-pokedex-load-more]',
+        },
+
+        classes: {
+            searchMode: 'pokedex--search',
         },
 
         attributes: {
@@ -74,15 +84,43 @@ export const pokedex: Pokedex = {
             const pokemonIds = Array.from(
                 $pokedexList.querySelectorAll<HTMLElement>(`*[${this.vars.attributes.pokemonId}]`)
             )
-                .map((el) => {
-                    return Number(el.getAttribute(this.vars.attributes.pokemonId))
-                })
-                .filter((id) => {
-                    return Number.isFinite(id) && id > 0
-                })
+                .map((el) => Number(el.getAttribute(this.vars.attributes.pokemonId)))
+                .filter((id) => Number.isFinite(id) && id > 0)
 
             pokemonDialog.openDialog(pokemonId, pokemonIds)
         })
+    },
+
+    setSearchMode(isActive: boolean): void {
+        const $pokedex = document.querySelector<HTMLElement>(this.vars.queries.component)
+        const $loadMoreButton = $pokedex?.querySelector<HTMLButtonElement>(
+            this.vars.queries.loadMoreButton
+        )
+
+        if (!$pokedex || !$loadMoreButton) {
+            return
+        }
+
+        $pokedex.classList.toggle(this.vars.classes.searchMode, isActive)
+        $loadMoreButton.hidden = isActive
+    },
+
+    renderNoResults(): void {
+        const $pokedex = document.querySelector<HTMLElement>(this.vars.queries.component)
+        const $pokedexList = $pokedex?.querySelector<HTMLUListElement>(this.vars.queries.list)
+
+        if (!$pokedex || !$pokedexList) {
+            return
+        }
+
+        this.setSearchMode(true)
+        $pokedexList.innerHTML = `
+            <li class="pokedex__empty col-12">
+                <p class="pokedex__empty-text" data-i18n="pokedex.noResults">No results found.</p>
+            </li>
+        `
+
+        void applyLocale(languageStore.getLanguage(), $pokedexList)
     },
 
     loadMorePokemons(): void {
@@ -108,19 +146,18 @@ export const pokedex: Pokedex = {
         const append = options?.append ?? true
 
         $loadMoreButton.disabled = true
+        loadingSpinner.show()
 
-        if (!append) {
-            $pokedexList.innerHTML = ''
-        }
+        const minLoaderTime = delay(2500)
 
-        fetchPokemonList(endpoint)
+        const flow: Promise<PokemonCardData[]> = fetchPokemonList(endpoint)
             .then((pokemonList) => Promise.all(pokemonList.results.map((p) => fetchPokemon(p.url))))
             .then((pokemonsData) =>
                 Promise.all(
                     pokemonsData.map((pokemonData) => {
                         const pokemon = new PokemonModel(pokemonData)
 
-                        const speciesPromise = fetchSpecies(pokemon.id).then(
+                        const speciesPromise = fetchSpecies(pokemon.speciesUrl).then(
                             (speciesData) => new SpeciesModel(speciesData)
                         )
 
@@ -136,7 +173,16 @@ export const pokedex: Pokedex = {
                     })
                 )
             )
-            .then((cards) => {
+
+        Promise.allSettled([flow, minLoaderTime])
+            .then(([flowResult]) => {
+                if (flowResult.status === 'rejected') {
+                    console.error(flowResult.reason)
+                    return
+                }
+
+                const cards = flowResult.value
+
                 this.renderPokemonCards(cards, { append, $pokedexList })
 
                 if (append) {
@@ -146,10 +192,8 @@ export const pokedex: Pokedex = {
 
                 this.vars.api.offset = cards.length
             })
-            .catch((err) => {
-                console.error(err)
-            })
             .finally(() => {
+                loadingSpinner.hide()
                 $loadMoreButton.disabled = false
             })
     },
@@ -166,8 +210,14 @@ export const pokedex: Pokedex = {
 
         for (const card of cards) {
             const liEl = document.createElement('li')
-
-            liEl.classList.add('pokedex__item', 'col-12', 'col-sm-6', 'col-md-4', 'col-lg-3')
+            liEl.classList.add(
+                'pokedex__item',
+                'col-12',
+                'col-sm-6',
+                'col-md-4',
+                'col-lg-3',
+                'col-xl-2'
+            )
 
             liEl.innerHTML = pokemonCardTemplate(card.pokemon, card.species, card.types)
             $pokedexList.appendChild(liEl)
@@ -175,6 +225,7 @@ export const pokedex: Pokedex = {
     },
 
     reloadPokemons(): void {
+        this.setSearchMode(false)
         const endpoint = `pokemon?limit=${this.vars.api.reloadLimit}&offset=0`
         this.loadPokemonData(endpoint, { append: false })
     },
@@ -193,40 +244,47 @@ export const pokedex: Pokedex = {
         const append = options?.append ?? false
 
         $loadMoreButton.disabled = true
+        loadingSpinner.show()
 
-        if (!append) {
-            $pokedexList.innerHTML = ''
-        }
+        const minLoaderTime = delay(2500)
 
-        Promise.all(ids.map((id) => fetchPokemon(`pokemon/${id}`)))
-            .then((pokemonsData) =>
-                Promise.all(
-                    pokemonsData.map((pokemonData) => {
-                        const pokemon = new PokemonModel(pokemonData)
+        const flow: Promise<PokemonCardData[]> = Promise.all(
+            ids.map((id) => fetchPokemon(`pokemon/${id}`))
+        ).then((pokemonsData) =>
+            Promise.all(
+                pokemonsData.map((pokemonData) => {
+                    const pokemon = new PokemonModel(pokemonData)
 
-                        const speciesPromise = fetchSpecies(pokemon.id).then(
-                            (speciesData) => new SpeciesModel(speciesData)
+                    const speciesPromise = fetchSpecies(pokemon.speciesUrl).then(
+                        (speciesData) => new SpeciesModel(speciesData)
+                    )
+
+                    const typesPromise = Promise.all(
+                        pokemon.types.map((t) =>
+                            fetchType(t.url).then((typeData) => new TypeModel(typeData))
                         )
+                    )
 
-                        const typesPromise = Promise.all(
-                            pokemon.types.map((t) =>
-                                fetchType(t.url).then((typeData) => new TypeModel(typeData))
-                            )
-                        )
-
-                        return Promise.all([speciesPromise, typesPromise]).then(
-                            ([species, types]): PokemonCardData => ({ pokemon, species, types })
-                        )
-                    })
-                )
+                    return Promise.all([speciesPromise, typesPromise]).then(
+                        ([species, types]): PokemonCardData => ({ pokemon, species, types })
+                    )
+                })
             )
-            .then((cards) => {
+        )
+
+        Promise.allSettled([flow, minLoaderTime])
+            .then(([flowResult]) => {
+                if (flowResult.status === 'rejected') {
+                    console.error(flowResult.reason)
+                    return
+                }
+
+                const cards = flowResult.value
+
                 this.renderPokemonCards(cards, { append, $pokedexList })
             })
-            .catch((err) => {
-                console.error(err)
-            })
             .finally(() => {
+                loadingSpinner.hide()
                 $loadMoreButton.disabled = false
             })
     },
