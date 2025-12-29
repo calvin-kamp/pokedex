@@ -39,12 +39,7 @@ export class SpeciesModel implements Species {
     }
 
     get evolvesFromSpeciesUrl(): string | undefined {
-        return this.species.evolves_from_species?.url || undefined
-    }
-
-    get pokedexNumbers(): SpeciesPokedexNumberEntry[] {
-        const apiPokedexNumbers: ApiPokedexNumberEntry[] = this.species.pokedex_numbers ?? []
-        return apiPokedexNumbers.map((entry) => this.toPokedexNumber(entry))
+        return this.species.evolves_from_species?.url
     }
 
     get generationName(): string {
@@ -60,6 +55,18 @@ export class SpeciesModel implements Species {
         return apiEntries.map((entry) => this.toDescription(entry))
     }
 
+    get localizedDescription(): string {
+        const lang = languageStore.getLanguage()
+
+        const entry =
+            this.descriptions.find((d) => d.language.name === lang) ??
+            this.descriptions.find((d) => d.language.name === 'en') ??
+            this.descriptions[0]
+
+        const text = entry?.description ?? ''
+        return text.replace(/\f/g, ' ').replace(/\s+/g, ' ').trim()
+    }
+
     get categories(): SpeciesCategoryEntry[] {
         const apiEntries: ApiGenusEntry[] = this.species.genera ?? []
         return apiEntries.map((entry) => this.toCategory(entry))
@@ -73,6 +80,16 @@ export class SpeciesModel implements Species {
             .find((e) => e.language.name === lang)
 
         return entry?.name ?? this.species.name
+    }
+
+    get nationalPokedexNumber(): number {
+        const entry = this.pokedexNumbers.find((e) => e.pokedex.name === 'national')
+        return entry?.entryNumber ?? this.id
+    }
+
+    get pokedexNumbers(): SpeciesPokedexNumberEntry[] {
+        const apiPokedexNumbers: ApiPokedexNumberEntry[] = this.species.pokedex_numbers ?? []
+        return apiPokedexNumbers.map((entry) => this.toPokedexNumber(entry))
     }
 
     private toPokedexNumber(entry: ApiPokedexNumberEntry): SpeciesPokedexNumberEntry {

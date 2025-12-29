@@ -11,7 +11,7 @@ import type {
     PokemonType,
     Pokemon,
 } from '@scripts/interfaces/domain/pokemon'
-import type { NamedResource } from '../interfaces/common/resources'
+import type { NamedResource } from '@scripts/interfaces/common/resources'
 
 export class PokemonModel implements Pokemon {
     private pokemon: ApiPokemon
