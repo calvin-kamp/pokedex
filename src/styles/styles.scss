@@ -6,3 +6,19 @@
 @use '@styles/base/colors';
 @use '@styles/base/reboot';
 @use '@styles/base/layout';
+
+@use '@styles/components/loader';
+@use '@styles/components/footer';
+@use '@styles/components/header';
+@use '@styles/components/search';
+@use '@styles/components/pokedex';
+@use '@styles/components/pokemon';
+@use '@styles/components/pokemon-info';
+@use '@styles/components/pokemon-dialog';
+@use '@styles/components/pokemon-accordion';
+@use '@styles/components/pokemon-abilities';
+@use '@styles/components/evolution-card';
+@use '@styles/components/evolution-chain';
+@use '@styles/components/pokemon-stats';
+@use '@styles/components/language-switch';
+@use '@styles/components/type';
