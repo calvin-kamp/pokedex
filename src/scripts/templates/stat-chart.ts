@@ -17,18 +17,20 @@ export const statChartTemplate = (pokemon: PokemonModel): string => {
     const MAX = 255
 
     return `
-        <ul class="pokemon-stats">
-            ${pokemon.stats
-                .map((s) => {
-                    const value = Number(s.baseStat ?? 0)
-                    const pct = Math.max(0, Math.min(100, Math.round((value / MAX) * 100)))
+        <ul class="pokemon-stats" aria-label="Base Stats">
+            ${(pokemon.stats ?? [])
+                .map((stat) => {
+                    const value = Number(stat.baseStat ?? 0)
+                    const percentage = Math.max(0, Math.min(100, Math.round((value / MAX) * 100)))
 
                     return `
-                        <li class="pokemon-stats__item">
-                            <span class="pokemon-stats__label">${statLabel(s.name)}</span>
+                        <li class="pokemon-stats__item" data-stat="${stat.name}">
+                            <span class="pokemon-stats__label">${statLabel(stat.name)}</span>
+
                             <span class="pokemon-stats__bar" aria-hidden="true">
-                                <span class="pokemon-stats__bar-fill" style="width:${pct}%"></span>
+                                <span class="pokemon-stats__bar-fill" style="--percentage:${percentage}%"></span>
                             </span>
+
                             <span class="pokemon-stats__value">${value}</span>
                         </li>
                     `
