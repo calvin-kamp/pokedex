@@ -9,6 +9,27 @@ const de: Translation = {
     },
     pokedex: {
         loadMore: 'Mehr anzeigen',
+        noResults: 'Keine Ergebnisse gefunden.',
+    },
+
+    pokemon: {
+        overview: 'Übersicht',
+        description: 'Beschreibung',
+        info: 'Infos',
+        height: 'Größe',
+        weight: 'Gewicht',
+        abilities: 'Fähigkeiten',
+        stats: 'Werte',
+        baseStats: 'Basiswerte',
+        evolution: 'Entwicklung',
+        stat: {
+            hp: 'KP',
+            atk: 'ANG',
+            def: 'VERT',
+            spa: 'SP-ANG',
+            spd: 'SP-VERT',
+            spe: 'INIT',
+        },
     },
 }
 

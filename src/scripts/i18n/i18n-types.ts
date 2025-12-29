@@ -31,6 +31,74 @@ type RootTranslation = {
 		 * S​h​o​w​ ​m​o​r​e
 		 */
 		loadMore: string
+		/**
+		 * N​o​ ​r​e​s​u​l​t​s​ ​f​o​u​n​d​.
+		 */
+		noResults: string
+	}
+	pokemon: {
+		/**
+		 * O​v​e​r​v​i​e​w
+		 */
+		overview: string
+		/**
+		 * D​e​s​c​r​i​p​t​i​o​n
+		 */
+		description: string
+		/**
+		 * I​n​f​o
+		 */
+		info: string
+		/**
+		 * H​e​i​g​h​t
+		 */
+		height: string
+		/**
+		 * W​e​i​g​h​t
+		 */
+		weight: string
+		/**
+		 * A​b​i​l​i​t​i​e​s
+		 */
+		abilities: string
+		/**
+		 * S​t​a​t​s
+		 */
+		stats: string
+		/**
+		 * B​a​s​e​ ​S​t​a​t​s
+		 */
+		baseStats: string
+		/**
+		 * E​v​o​l​u​t​i​o​n
+		 */
+		evolution: string
+		stat: {
+			/**
+			 * H​P
+			 */
+			hp: string
+			/**
+			 * A​T​K
+			 */
+			atk: string
+			/**
+			 * D​E​F
+			 */
+			def: string
+			/**
+			 * S​p​A
+			 */
+			spa: string
+			/**
+			 * S​p​D
+			 */
+			spd: string
+			/**
+			 * S​P​D
+			 */
+			spe: string
+		}
 	}
 }
 
@@ -52,6 +120,74 @@ export type TranslationFunctions = {
 		 * Show more
 		 */
 		loadMore: () => LocalizedString
+		/**
+		 * No results found.
+		 */
+		noResults: () => LocalizedString
+	}
+	pokemon: {
+		/**
+		 * Overview
+		 */
+		overview: () => LocalizedString
+		/**
+		 * Description
+		 */
+		description: () => LocalizedString
+		/**
+		 * Info
+		 */
+		info: () => LocalizedString
+		/**
+		 * Height
+		 */
+		height: () => LocalizedString
+		/**
+		 * Weight
+		 */
+		weight: () => LocalizedString
+		/**
+		 * Abilities
+		 */
+		abilities: () => LocalizedString
+		/**
+		 * Stats
+		 */
+		stats: () => LocalizedString
+		/**
+		 * Base Stats
+		 */
+		baseStats: () => LocalizedString
+		/**
+		 * Evolution
+		 */
+		evolution: () => LocalizedString
+		stat: {
+			/**
+			 * HP
+			 */
+			hp: () => LocalizedString
+			/**
+			 * ATK
+			 */
+			atk: () => LocalizedString
+			/**
+			 * DEF
+			 */
+			def: () => LocalizedString
+			/**
+			 * SpA
+			 */
+			spa: () => LocalizedString
+			/**
+			 * SpD
+			 */
+			spd: () => LocalizedString
+			/**
+			 * SPD
+			 */
+			spe: () => LocalizedString
+		}
 	}
 }
 
