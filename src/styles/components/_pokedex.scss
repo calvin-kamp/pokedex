@@ -7,6 +7,13 @@
     height: calc(100dvh - #{$header-height * 1.2} - $footer-height);
     overflow: hidden;
 
+    &--search {
+        .pokedex__load-more {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+    }
+
     > .row {
         height: 100%;
 
