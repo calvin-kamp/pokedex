@@ -19,6 +19,9 @@ import type { NamedResource } from '@scripts/interfaces/common/resources'
 import { applyLocale } from '@scripts/i18n/i18n-runtime'
 import { languageStore } from '@scripts/stores/language-store'
 
+import { fetchAbility } from '@scripts/api/ability.api'
+import { AbilityModel } from '@scripts/models/ability-model'
+
 const resolveEvolutionCard = async (resource: NamedResource): Promise<EvolutionCard> => {
     const [pokemonData, speciesData] = await Promise.all([
         fetchPokemon(`pokemon/${resource.name}`),
@@ -159,25 +162,6 @@ export const pokemonDialog: PokemonDialog = {
 
         $pokemonDialog.addEventListener('click', (e) => {
             const target = e.target as HTMLElement
-            if (target !== $pokemonDialog) {
-                return
-            }
-
-            const rect = $pokemonDialog.getBoundingClientRect()
-            const me = e as MouseEvent
-            const isInside =
-                me.clientX >= rect.left &&
-                me.clientX <= rect.right &&
-                me.clientY >= rect.top &&
-                me.clientY <= rect.bottom
-
-            if (!isInside) {
-                this.closeDialog($pokemonDialog)
-            }
-        })
-
-        $pokemonDialog.addEventListener('click', (e) => {
-            const target = e.target as HTMLElement
             const $card = target.closest<HTMLButtonElement>(this.vars.queries.evolutionCard)
             if (!$card) {
                 return
@@ -196,14 +180,10 @@ export const pokemonDialog: PokemonDialog = {
         const $prevBtn = $pokemonDialog.querySelector<HTMLButtonElement>(
             this.vars.queries.prevButton
         )
-        if (!$prevBtn) {
-            return
-        }
+        if (!$prevBtn) return
 
         const prevId = Number($prevBtn.getAttribute(this.vars.attributes.pokemonId))
-        if (!prevId) {
-            return
-        }
+        if (!prevId) return
 
         this.navigateTo($pokemonDialog, prevId)
     },
@@ -212,14 +192,10 @@ export const pokemonDialog: PokemonDialog = {
         const $nextBtn = $pokemonDialog.querySelector<HTMLButtonElement>(
             this.vars.queries.nextButton
         )
-        if (!$nextBtn) {
-            return
-        }
+        if (!$nextBtn) return
 
         const nextId = Number($nextBtn.getAttribute(this.vars.attributes.pokemonId))
-        if (!nextId) {
-            return
-        }
+        if (!nextId) return
 
         this.navigateTo($pokemonDialog, nextId)
     },
@@ -232,9 +208,7 @@ export const pokemonDialog: PokemonDialog = {
 
     loadPokemonData($pokemonDialog: HTMLDialogElement, pokemonId: number): void {
         const $content = $pokemonDialog.querySelector<HTMLDivElement>(this.vars.queries.content)
-        if (!$content) {
-            return
-        }
+        if (!$content) return
 
         $content.innerHTML = ''
 
@@ -250,6 +224,13 @@ export const pokemonDialog: PokemonDialog = {
                     fetchSpecies(pokemonId).then((d) => new SpeciesModel(d)),
                 ])
 
+                const abilities = await Promise.all(
+                    (pokemon.abilities ?? []).map(async (a) => {
+                        const abilityData = await fetchAbility(a.url)
+                        return new AbilityModel(abilityData)
+                    })
+                )
+
                 const evolutionChainData = await fetchEvolutionChain(speciesData.evolutionChainUrl)
                 const evolutionChain = new EvolutionChainModel(evolutionChainData)
 
@@ -259,6 +240,7 @@ export const pokemonDialog: PokemonDialog = {
                     pokemon,
                     species: speciesData,
                     types: typesData,
+                    abilities,
                     evolutionChain,
                     evolutionStages,
                 }
@@ -268,11 +250,14 @@ export const pokemonDialog: PokemonDialog = {
                     dialogData.pokemon,
                     dialogData.species,
                     dialogData.types,
-                    dialogData.evolutionStages
+                    dialogData.evolutionStages,
+                    dialogData.abilities
                 )
 
                 $content.appendChild(templateEl.content.cloneNode(true))
+
                 await applyLocale(languageStore.getLanguage(), $content)
+
                 pokemonAccordion.init($content)
             })
             .catch((error) => console.error(error))
@@ -282,9 +267,7 @@ export const pokemonDialog: PokemonDialog = {
         const $pokemonDialog = document.querySelector<HTMLDialogElement>(
             this.vars.queries.component
         )
-        if (!$pokemonDialog) {
-            return
-        }
+        if (!$pokemonDialog) return
 
         this.setPokemonIds(pokemonIds)
         this.navigateTo($pokemonDialog, id)

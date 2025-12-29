@@ -2,6 +2,7 @@ import type { PokemonModel } from '@scripts/models/pokemon-model'
 import type { SpeciesModel } from '@scripts/models/species-model'
 import type { TypeModel } from '@scripts/models/type-model'
 import type { EvolutionChainModel } from '@scripts/models/evolution-chain-model'
+import type { AbilityModel } from '@scripts/models/ability-model'
 
 export type EvolutionCard = {
     pokemon: PokemonModel
@@ -14,6 +15,7 @@ export type PokemonDialogData = {
     pokemon: PokemonModel
     species: SpeciesModel
     types: TypeModel[]
+    abilities: AbilityModel[]
     evolutionChain: EvolutionChainModel
     evolutionStages: EvolutionCardsStage[]
 }
