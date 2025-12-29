@@ -1,6 +1,7 @@
 import { languageStore } from '@scripts/stores/language-store'
 import { applyLocale } from '@scripts/i18n/i18n-runtime'
 import { pokedex } from '@scripts/components/pokedex'
+import { pokemonDialog } from '@scripts/components/pokemon-dialog'
 import type { LanguageSwitch } from '@scripts/interfaces/components/language-switch'
 
 export const languageSwitch: LanguageSwitch = {
@@ -41,6 +42,7 @@ export const languageSwitch: LanguageSwitch = {
 
                 this.setSelectedLanguage($langSwitch)
                 pokedex.reloadPokemons()
+                pokemonDialog.refreshOpenDialog()
             })
         }
     },
@@ -48,7 +50,7 @@ export const languageSwitch: LanguageSwitch = {
     setSelectedLanguage($langSwitch: HTMLInputElement): void {
         const language = $langSwitch.getAttribute(this.vars.attributes.language)
 
-        if (!language?.length) {
+        if (language !== 'de' && language !== 'en') {
             return
         }
 
