@@ -1,0 +1,105 @@
+@use '@styles/utils' as *;
+
+.type {
+    padding: 4px 16px;
+    border-radius: 16px;
+    background-color: var(--color-type-background-color);
+    color: var(--color-type-font-color);
+    text-transform: capitalize;
+    font-weight: $font-weight-medium;
+
+    &--normal {
+        --color-type-background-color: var(--color-type-normal-background);
+        --color-type-font-color: var(--color-type-normal-font);
+    }
+
+    &--fighting {
+        --color-type-background-color: var(--color-type-fighting-background);
+        --color-type-font-color: var(--color-type-fighting-font);
+    }
+
+    &--flying {
+        --color-type-background-color: var(--color-type-flying-background);
+        --color-type-font-color: var(--color-type-flying-font);
+    }
+
+    &--poison {
+        --color-type-background-color: var(--color-type-poison-background);
+        --color-type-font-color: var(--color-type-poison-font);
+    }
+
+    &--ground {
+        --color-type-background-color: var(--color-type-ground-background);
+        --color-type-font-color: var(--color-type-ground-font);
+    }
+
+    &--rock {
+        --color-type-background-color: var(--color-type-rock-background);
+        --color-type-font-color: var(--color-type-rock-font);
+    }
+
+    &--bug {
+        --color-type-background-color: var(--color-type-bug-background);
+        --color-type-font-color: var(--color-type-bug-font);
+    }
+
+    &--ghost {
+        --color-type-background-color: var(--color-type-ghost-background);
+        --color-type-font-color: var(--color-type-ghost-font);
+    }
+
+    &--steel {
+        --color-type-background-color: var(--color-type-steel-background);
+        --color-type-font-color: var(--color-type-steel-font);
+    }
+
+    &--fire {
+        --color-type-background-color: var(--color-type-fire-background);
+        --color-type-font-color: var(--color-type-fire-font);
+    }
+
+    &--water {
+        --color-type-background-color: var(--color-type-water-background);
+        --color-type-font-color: var(--color-type-water-font);
+    }
+
+    &--grass {
+        --color-type-background-color: var(--color-type-grass-background);
+        --color-type-font-color: var(--color-type-grass-font);
+    }
+
+    &--electric {
+        --color-type-background-color: var(--color-type-electric-background);
+        --color-type-font-color: var(--color-type-electric-font);
+    }
+
+    &--psychic {
+        --color-type-background-color: var(--color-type-psychic-background);
+        --color-type-font-color: var(--color-type-psychic-font);
+    }
+
+    &--ice {
+        --color-type-background-color: var(--color-type-ice-background);
+        --color-type-font-color: var(--color-type-ice-font);
+    }
+
+    &--dragon {
+        --color-type-background-color: var(--color-type-dragon-background);
+        --color-type-font-color: var(--color-type-dragon-font);
+    }
+
+    &--dark {
+        --color-type-background-color: var(--color-type-dark-background);
+        --color-type-font-color: var(--color-type-dark-font);
+    }
+
+    &--fairy {
+        --color-type-background-color: var(--color-type-fairy-background);
+        --color-type-font-color: var(--color-type-fairy-font);
+    }
+
+    &--stellar {
+        --color-type-background-color: var(--color-type-stellar-background);
+        --color-type-font-color: var(--color-type-stellar-font);
+    }
+}
