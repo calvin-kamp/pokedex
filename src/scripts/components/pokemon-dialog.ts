@@ -174,6 +174,23 @@ export const pokemonDialog: PokemonDialog = {
 
             this.navigateTo($pokemonDialog, id)
         })
+
+        $pokemonDialog.addEventListener('pointerdown', (e: PointerEvent) => {
+            if (e.target !== $pokemonDialog) {
+                return
+            }
+
+            const rect = $pokemonDialog.getBoundingClientRect()
+            const clickedOutside =
+                e.clientX < rect.left ||
+                e.clientX > rect.right ||
+                e.clientY < rect.top ||
+                e.clientY > rect.bottom
+
+            if (clickedOutside) {
+                this.closeDialog($pokemonDialog)
+            }
+        })
     },
 
     loadPreviousPokemon($pokemonDialog: HTMLDialogElement): void {
