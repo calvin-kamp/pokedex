@@ -3,6 +3,7 @@ import type { PokemonModel } from '@scripts/models/pokemon-model'
 import type { SpeciesModel } from '@scripts/models/species-model'
 import type { TypeModel } from '@scripts/models/type-model'
 import type { EvolutionCardsStage } from '@scripts/interfaces/components/pokemon-dialog'
+import type { AbilityModel } from '@scripts/models/ability-model'
 import { evolutionStageTemplate } from '@scripts/templates/evolution-stage'
 import { statChartTemplate } from '@scripts/templates/stat-chart'
 import {
@@ -11,26 +12,12 @@ import {
     formatPokemonWeight,
 } from '@scripts/utils/helper'
 
-const humanize = (value: string): string => {
-    return String(value ?? '')
-        .replace(/-/g, ' ')
-        .replace(/\b\w/g, (c) => c.toUpperCase())
-}
-
 const hasRealEvolution = (stages: EvolutionCardsStage[] = []): boolean => {
-    if (!stages.length) {
-        return false
-    }
+    if (!stages.length) return false
 
     const flatten = (input: EvolutionCardsStage[]): unknown[] => {
         const out: unknown[] = []
-        for (const s of input) {
-            if (Array.isArray(s)) {
-                out.push(...s)
-            } else {
-                out.push(s)
-            }
-        }
+        for (const s of input) out.push(...(Array.isArray(s) ? s : [s]))
         return out
     }
 
@@ -41,11 +28,11 @@ export const pokemonDetailTemplate = (
     pokemon: PokemonModel,
     species: SpeciesModel,
     types: TypeModel[],
-    evolutionStages: EvolutionCardsStage[]
+    evolutionStages: EvolutionCardsStage[],
+    abilitiesModels: AbilityModel[]
 ): string => {
     const description = species.localizedDescription
-    const abilities = pokemon.abilities ?? []
-
+    const abilities = abilitiesModels ?? []
     const showEvolution = hasRealEvolution(evolutionStages)
 
     return `
@@ -107,10 +94,8 @@ export const pokemonDetailTemplate = (
                                             <ul class="pokemon-abilities">
                                                 ${abilities
                                                     .map(
-                                                        (ability) =>
-                                                            `<li class="pokemon-abilities__item">${humanize(
-                                                                ability.name
-                                                            )}</li>`
+                                                        (a) =>
+                                                            `<li class="pokemon-abilities__item">${a.localizedName}</li>`
                                                     )
                                                     .join('')}
                                             </ul>
