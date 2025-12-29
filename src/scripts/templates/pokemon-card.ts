@@ -5,7 +5,6 @@ import type { TypeModel } from '@scripts/models/type-model'
 import { formatPokedexNumber } from '@scripts/utils/helper'
 
 const getTypeBorderVar = (typeName: string): string => {
-    // nutzt deine Tokens: --color-type-<name>-background
     return `var(--color-type-${typeName}-background)`
 }
 

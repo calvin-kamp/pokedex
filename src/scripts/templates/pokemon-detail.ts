@@ -71,35 +71,35 @@ export const pokemonDetailTemplate = (
             </header>
 
             <div class="pokemon-accordion" data-component="pokemon-accordion">
-                <details class="pokemon-accordion__item data-accordion-item" open>
-                    <summary class="pokemon-accordion__summary data-accordion-summary">
-                        <span class="pokemon-accordion__title">Übersicht</span>
+                <details class="pokemon-accordion__item" data-accordion-item open>
+                    <summary class="pokemon-accordion__summary" data-accordion-summary>
+                        <span class="pokemon-accordion__title" data-i18n="pokemon.overview">Overview</span>
                         <span class="pokemon-accordion__chevron" aria-hidden="true"></span>
                     </summary>
 
-                    <div class="pokemon-accordion__content data-accordion-content">
+                    <div class="pokemon-accordion__content" data-accordion-content>
                         <section class="pokemon__section">
-                            <h3 class="pokemon__headline">Beschreibung</h3>
+                            <h3 class="pokemon__headline" data-i18n="pokemon.description">Description</h3>
                             <p class="pokemon__description">${description || '—'}</p>
                         </section>
 
                         <section class="pokemon__section">
-                            <h3 class="pokemon__headline">Infos</h3>
+                            <h3 class="pokemon__headline" data-i18n="pokemon.info">Info</h3>
 
                             <ul class="pokemon-info">
                                 <li class="pokemon-info__item">
-                                    <small>Größe</small>
+                                    <small data-i18n="pokemon.height">Height</small>
                                     <strong>${formatPokemonHeight(pokemon.height)}</strong>
                                 </li>
                                 
                                 <li class="pokemon-info__item">
-                                    <small>Gewicht</small>
+                                    <small data-i18n="pokemon.weight">Weight</small>
                                     <strong>${formatPokemonWeight(pokemon.weight)}</strong>
                                 </li>
                             </ul>
 
                             <div class="pokemon__subsection">
-                                <h4 class="pokemon__subheadline">Fähigkeiten</h4>
+                                <h4 class="pokemon__subheadline" data-i18n="pokemon.abilities">Abilities</h4>
 
                                 ${
                                     abilities.length
@@ -122,15 +122,15 @@ export const pokemonDetailTemplate = (
                     </div>
                 </details>
 
-                <details class="pokemon-accordion__item data-accordion-item">
-                    <summary class="pokemon-accordion__summary data-accordion-summary">
-                        <span class="pokemon-accordion__title">Stats</span>
+                <details class="pokemon-accordion__item" data-accordion-item>
+                    <summary class="pokemon-accordion__summary" data-accordion-summary>
+                        <span class="pokemon-accordion__title" data-i18n="pokemon.stats">Stats</span>
                         <span class="pokemon-accordion__chevron" aria-hidden="true"></span>
                     </summary>
 
-                    <div class="pokemon-accordion__content data-accordion-content">
+                    <div class="pokemon-accordion__content" data-accordion-content>
                         <section class="pokemon__section">
-                            <h3 class="pokemon__headline">Stats</h3>
+                            <h3 class="pokemon__headline" data-i18n="pokemon.baseStats">Base Stats</h3>
                             ${statChartTemplate(pokemon)}
                         </section>
                     </div>
@@ -139,15 +139,15 @@ export const pokemonDetailTemplate = (
                 ${
                     showEvolution
                         ? `
-                            <details class="pokemon-accordion__item data-accordion-item">
-                                <summary class="pokemon-accordion__summary data-accordion-summary">
-                                    <span class="pokemon-accordion__title">Evolution</span>
+                            <details class="pokemon-accordion__item" data-accordion-item>
+                                <summary class="pokemon-accordion__summary" data-accordion-summary>
+                                    <span class="pokemon-accordion__title" data-i18n="pokemon.evolution">Evolution</span>
                                     <span class="pokemon-accordion__chevron" aria-hidden="true"></span>
                                 </summary>
 
-                                <div class="pokemon-accordion__content data-accordion-content">
+                                <div class="pokemon-accordion__content" data-accordion-content>
                                     <section class="pokemon__section">
-                                        <h3 class="pokemon__headline">Evolution</h3>
+                                        <h3 class="pokemon__headline" data-i18n="pokemon.evolution">Evolution</h3>
                                         ${evolutionStageTemplate(evolutionStages)}
                                     </section>
                                 </div>
