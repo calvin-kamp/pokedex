@@ -1,0 +1,43 @@
+@use '@styles/utils' as *;
+
+.language-switch {
+    @include flex(row, nowrap, space-between, center);
+
+    @include breakpoint(lg) {
+        justify-content: flex-end;
+        gap: 24px;
+    }
+
+    &__label {
+        display: flex;
+    }
+
+    &__input {
+        &:checked {
+            + svg {
+                border-color: var(--color-body-font);
+            }
+        }
+    }
+
+    &__icon {
+        width: 36px;
+        border: 2px solid transparent;
+        border-radius: 50%;
+        transition: border $transition-time ease-in-out;
+
+        @include manual-breakpoint(460px) {
+            width: 50px;
+        }
+
+        @include breakpoint(sm) {
+            width: 44px;
+        }
+
+        &:hover {
+            svg {
+                border-color: var(--color-body-font);
+            }
+        }
+    }
+}
