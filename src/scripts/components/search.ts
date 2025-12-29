@@ -3,6 +3,8 @@ import { languageStore } from '@scripts/stores/language-store'
 import { pokedex } from '@scripts/components/pokedex'
 import type { Search } from '@scripts/interfaces/components/search'
 
+const BUTTON_ONLY_MAX_WIDTH = 1023
+
 export const search: Search = {
     vars: {
         queries: {
@@ -17,7 +19,6 @@ export const search: Search = {
             showSearch: 'search--visible',
         },
 
-        windowWidth: 0,
         timeOut: undefined as number | undefined,
 
         state: {
@@ -25,7 +26,7 @@ export const search: Search = {
         },
     },
 
-    init() {
+    init(): void {
         const $search = document.querySelector<HTMLElement>(this.vars.queries.component)
 
         if (!$search) {
@@ -35,10 +36,9 @@ export const search: Search = {
         this.addEventTrigger($search)
     },
 
-    addEventTrigger($search: HTMLElement) {
+    addEventTrigger($search: HTMLElement): void {
         const $openSearch = $search.querySelector<HTMLButtonElement>(this.vars.queries.openSearch)
         const $closeSearch = $search.querySelector<HTMLButtonElement>(this.vars.queries.closeSearch)
-
         const $searchInput = $search.querySelector<HTMLInputElement>(this.vars.queries.searchInput)
         const $searchTrigger = $search.querySelector<HTMLButtonElement>(
             this.vars.queries.searchSubmit
@@ -65,8 +65,12 @@ export const search: Search = {
         })
 
         $searchTrigger.addEventListener('click', () => {
-            this.submitSearch($searchInput)
+            this.submitSearch($search, $searchInput)
         })
+    },
+
+    isButtonOnlyMode(): boolean {
+        return window.matchMedia(`(max-width: ${BUTTON_ONLY_MAX_WIDTH}px)`).matches
     },
 
     openSearch($search: HTMLElement, $searchInput: HTMLInputElement): void {
@@ -84,13 +88,28 @@ export const search: Search = {
         this.hideSearchBar($search)
     },
 
+    closeAfterSubmit($search: HTMLElement, $searchInput: HTMLInputElement): void {
+        window.clearTimeout(this.vars.timeOut)
+        $searchInput.blur()
+        this.hideSearchBar($search)
+    },
+
     handleSearchInput($searchInput: HTMLInputElement): void {
         window.clearTimeout(this.vars.timeOut)
 
         const searchQuery = $searchInput.value.trim()
 
+        if (searchQuery.length === 0) {
+            this.resetSearch()
+            return
+        }
+
         if (searchQuery.length < 3) {
             this.resetSearch()
+            return
+        }
+
+        if (this.isButtonOnlyMode()) {
             return
         }
 
@@ -107,6 +126,11 @@ export const search: Search = {
         if (e.key === 'Enter') {
             e.preventDefault()
             window.clearTimeout(this.vars.timeOut)
+
+            if (this.isButtonOnlyMode()) {
+                return
+            }
+
             this.triggerSearch($searchInput)
             return
         }
@@ -117,9 +141,13 @@ export const search: Search = {
         }
     },
 
-    submitSearch($searchInput: HTMLInputElement): void {
+    submitSearch($search: HTMLElement, $searchInput: HTMLInputElement): void {
         window.clearTimeout(this.vars.timeOut)
         this.triggerSearch($searchInput)
+
+        if (this.isButtonOnlyMode()) {
+            this.closeAfterSubmit($search, $searchInput)
+        }
     },
 
     triggerSearch($searchInput: HTMLInputElement): void {
@@ -130,32 +158,35 @@ export const search: Search = {
         }
 
         this.vars.state.lastQuery = searchQuery
+        pokedex.setSearchMode(true)
         this.loadSearchResults(searchQuery)
     },
 
     resetSearch(): void {
         if (this.vars.state.lastQuery.length === 0) {
+            pokedex.setSearchMode(false)
             return
         }
 
         this.vars.state.lastQuery = ''
+        pokedex.setSearchMode(false)
         pokedex.reloadPokemons()
     },
 
-    hideSearchBar($search: HTMLElement) {
+    hideSearchBar($search: HTMLElement): void {
         $search.classList.remove(this.vars.classes.showSearch)
     },
 
-    showSearchBar($search: HTMLElement) {
+    showSearchBar($search: HTMLElement): void {
         $search.classList.add(this.vars.classes.showSearch)
     },
 
-    loadSearchResults(searchQuery: string) {
+    loadSearchResults(searchQuery: string): void {
         const language = languageStore.getLanguage()
 
         const list = Object.entries(nameMap.bySlug).map(([slug, entry]) => {
             return {
-                slug: slug,
+                slug,
                 id: entry.id,
                 en: entry.en,
                 de: entry.de,
@@ -167,9 +198,12 @@ export const search: Search = {
             return value.includes(searchQuery.toLowerCase())
         })
 
-        const ids = hits.map((hit) => {
-            return hit.id
-        })
+        const ids = hits.map((hit) => hit.id)
+
+        if (ids.length === 0) {
+            pokedex.renderNoResults()
+            return
+        }
 
         pokedex.loadPokemonsByIds(ids, { append: false })
     },

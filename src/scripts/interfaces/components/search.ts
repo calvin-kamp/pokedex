@@ -12,7 +12,6 @@ export interface Search {
             showSearch: string
         }
 
-        windowWidth: number
         timeOut: number | undefined
 
         state: {
@@ -22,15 +21,17 @@ export interface Search {
 
     init(): void
     addEventTrigger($search: HTMLElement): void
+    isButtonOnlyMode(): boolean
     openSearch($search: HTMLElement, $searchInput: HTMLInputElement): void
     closeSearch($search: HTMLElement, $searchInput: HTMLInputElement): void
+    closeAfterSubmit($search: HTMLElement, $searchInput: HTMLInputElement): void
     handleSearchInput($searchInput: HTMLInputElement): void
     handleSearchKeydown(
         e: KeyboardEvent,
         $search: HTMLElement,
         $searchInput: HTMLInputElement
     ): void
-    submitSearch($searchInput: HTMLInputElement): void
+    submitSearch($search: HTMLElement, $searchInput: HTMLInputElement): void
     triggerSearch($searchInput: HTMLInputElement): void
     resetSearch(): void
     hideSearchBar($search: HTMLElement): void
