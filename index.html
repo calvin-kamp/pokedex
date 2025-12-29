@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="icon" href="./icons/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="./icons/favicon.ico" sizes="any" />
 
         <link rel="stylesheet" href="./src/styles/styles.scss" />
         <title>Pokedex</title>
     </head>
     <body>
-        <header>
+        <header class="header">
             <div class="header__wrapper container">
                 <div class="row">
-                    <div class="header__logo col-3 col-right-2 col-sm-right-5">
+                    <div
+                        class="header__logo col-3 col-right-2 col-sm-right-4 col-md-right-0 col-xl-right-3"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             xml:space="preserve"
@@ -65,10 +69,44 @@
                     </div>
 
                     <div
-                        class="header__search-trigger col-2 col-right-1 col-sm-1"
+                        class="header__search search col-2 col-right-1 col-sm-2 col-sm-right-0 col-md-7 col-xl-5"
                         data-component="search"
                     >
-                        <button data-search-trigger class="header__search-trigger">
+                        <div class="search__wrapper">
+                            <div class="search__bar">
+                                <input
+                                    autocomplete="off"
+                                    type="search"
+                                    data-search-input
+                                    data-i18n-attr="placeholder:search.placeholder"
+                                    class="search__input"
+                                />
+                                <button class="search__close" data-search-close>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke="#000"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="m6 6 12 12m0-12L6 18"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
+                            <button
+                                class="search__submit button button--primary"
+                                data-search-submit
+                                data-i18n="search.submit"
+                            ></button>
+                        </div>
+
+                        <button data-search-open class="search__open-trigger">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 id="Layer_1"
@@ -81,7 +119,7 @@
                                     <style>
                                         .cls-1 {
                                             fill: none;
-                                            stroke: #020202;
+                                            stroke: #ffffff;
                                             stroke-miterlimit: 10;
                                             stroke-width: 1.91px;
                                         }
@@ -94,17 +132,19 @@
                     </div>
 
                     <div
-                        class="header__language-switch col-4 col-sm-2"
+                        class="header__language-switch language-switch col-4 col-sm-3 col-md-2 col-lg-2 col-xl-1"
                         data-component="language-switch"
                     >
-                        <label>
+                        <label class="language-switch__label">
                             <input
+                                class="language-switch__input"
                                 type="radio"
                                 name="language"
                                 value="en"
                                 data-language-switch="en"
                             />
                             <svg
+                                class="language-switch__icon"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="512"
                                 height="512"
@@ -128,14 +168,16 @@
                             </svg>
                         </label>
 
-                        <label>
+                        <label class="language-switch__label">
                             <input
+                                class="language-switch__input"
                                 type="radio"
                                 name="language"
                                 value="de"
                                 data-language-switch="de"
                             />
                             <svg
+                                class="language-switch__icon"
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="512"
                                 height="512"
@@ -155,32 +197,91 @@
         </header>
 
         <main>
-            <section class="pokedex container">
+            <section class="pokedex container" data-component="pokedex">
                 <div class="row">
-                    <aside class="pokedex__filter col-12 col-xl-3" data-component="filter">
-                        <div></div>
-                    </aside>
+                    <div class="col-12">
+                        <ul class="pokedex__list row" data-pokedex-list></ul>
 
-                    <div class="col-12 col-xl-9">
-                        <ul class="pokedex__list row" data-component="pokedex-list"></ul>
-
-                        <button class="pokedex__load-more">load more</button>
+                        <button
+                            class="pokedex__load-more button button--primary"
+                            data-pokedex-load-more
+                            data-i18n="pokedex.loadMore"
+                        ></button>
                     </div>
                 </div>
             </section>
 
-            <div class="search">
-                <input type="text" class="search__input" />
+            <dialog class="pokemon-dialog" data-component="pokemon-dialog">
+                <button class="pokemon-dialog__close" data-pokemon-dialog-close>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="36"
+                        height="36"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke="#000"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="m6 6 12 12m0-12L6 18"
+                        />
+                    </svg>
+                </button>
 
-                <button class="search__submit"></button>
-            </div>
-
-            <dialog class="pokemon-detail" data-component="pokemon-detail">
-                <div data-pokemon-detail-content></div>
+                <div class="pokemon-dialog__wrapper" data-pokemon-dialog-wrapper>
+                    <button class="pokemon-dialog__prev" data-pokemon-dialog-previous>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="40"
+                            height="40"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke="#000"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="m15 6-6 6 6 6"
+                            />
+                        </svg>
+                    </button>
+                    <div class="pokemon-dialog__content" data-pokemon-dialog-content></div>
+                    <button class="pokemon-dialog__next" data-pokemon-dialog-next>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="40"
+                            height="40"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke="#000"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="m9 6 6 6-6 6"
+                            />
+                        </svg>
+                    </button>
+                </div>
             </dialog>
         </main>
 
-        <footer></footer>
+        <footer class="footer">
+            <p>&#169; 2025 Calvin Kamp</p>
+        </footer>
+
+        <div class="loader loader--overlay" data-component="loader" hidden>
+            <div class="loader__stage" aria-hidden="true">
+                <div class="loader__ball"></div>
+                <div class="loader__shadow"></div>
+            </div>
+
+            <span class="loader__sr" role="status" aria-live="polite">loading…</span>
+        </div>
 
         <script type="module" src="/src/main.ts"></script>
     </body>
