@@ -1,0 +1,23 @@
+@use '@styles/utils' as *;
+
+.pokemon-info {
+    &__item {
+        margin-bottom: 4px;
+        @include flex(row, nowrap, space-between);
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+
+    small {
+        display: block;
+        font-size: inherit;
+    }
+
+    strong {
+        display: block;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+}

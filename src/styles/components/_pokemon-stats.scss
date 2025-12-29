@@ -1,0 +1,66 @@
+@use '@styles/utils' as *;
+
+.pokemon-stats {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    &__item {
+        --stat-rgb: var(--color-primary-rgb);
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(var(--color-black-rgb), 0.2);
+        border: 1px solid rgba(var(--color-white-rgb), 0.15);
+    }
+
+    &__item + &__item {
+        margin-top: 10px;
+    }
+
+    &__label {
+        width: 52px;
+        flex: 0 0 52px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
+
+    &__bar {
+        flex: 1 1 auto;
+        min-width: 0;
+
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(var(--color-white-rgb), 0.15);
+        overflow: hidden;
+    }
+
+    &__bar-fill {
+        display: block;
+        height: 100%;
+        width: var(--percentage, 0%);
+        border-radius: 999px;
+
+        background: linear-gradient(
+            90deg,
+            rgba(var(--stat-rgb), 0.95),
+            rgba(var(--stat-rgb), 0.35)
+        );
+
+        box-shadow: 0 0 0 1px rgba(var(--stat-rgb), 0.25) inset;
+        transition: width 220ms ease;
+    }
+
+    &__value {
+        width: 44px;
+        flex: 0 0 44px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        opacity: 0.9;
+    }
+}

@@ -1,0 +1,18 @@
+@use '@styles/utils' as *;
+
+.pokemon-abilities {
+    gap: 16px;
+    @include flex(row, wrap);
+
+    &__item {
+        &::after {
+            content: ',';
+        }
+
+        &:last-of-type {
+            &::after {
+                content: unset;
+            }
+        }
+    }
+}

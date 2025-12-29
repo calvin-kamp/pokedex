@@ -1,0 +1,7 @@
+@use '@styles/utils' as *;
+
+.pokemon-accordion {
+    &__title {
+        font-size: 18px;
+    }
+}

@@ -1,0 +1,25 @@
+@use '@styles/utils' as *;
+
+.evolution-card {
+    @include breakpoint(md) {
+        min-width: 160px;
+        height: 100%;
+        @include flex(column, nowrap);
+    }
+
+    &__image {
+        width: 160px;
+        height: 160px;
+        margin-bottom: 24px;
+    }
+
+    &__pokedex-number {
+        display: block;
+        text-align: left;
+    }
+
+    &__name {
+        display: block;
+        text-align: left;
+    }
+}

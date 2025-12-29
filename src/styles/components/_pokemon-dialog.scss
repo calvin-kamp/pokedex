@@ -1,0 +1,97 @@
+@use '@styles/utils' as *;
+
+.pokemon-dialog {
+    position: relative;
+    width: calc(100% - 24px);
+    max-width: 768px;
+    height: 75vh;
+    padding: 48px 24px;
+    border-radius: 16px;
+    border: 2px solid var(--color-border);
+    background: var(--color-card-background);
+    overflow: hidden;
+
+    &--open {
+        @include flex(row, wrap);
+    }
+
+    &__wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__content {
+        height: 100%;
+        width: calc(100% - 48px);
+        padding: 0 12px 12px;
+        margin: 0 auto;
+        scrollbar-gutter: stable;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        box-sizing: border-box;
+    }
+
+    > button {
+        width: 44px;
+        height: 44px;
+    }
+
+    &__close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        cursor: pointer;
+
+        svg {
+            path {
+                stroke: var(--color-white);
+                transition: stroke $transition-time ease-in-out;
+            }
+        }
+
+        &:hover {
+            svg {
+                path {
+                    stroke: var(--color-border);
+                }
+            }
+        }
+    }
+
+    &__prev,
+    &__next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+
+        &:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        svg {
+            path {
+                stroke: var(--color-white);
+                transition: stroke $transition-time ease-in-out;
+            }
+        }
+
+        &:hover {
+            svg {
+                path {
+                    stroke: var(--color-border);
+                }
+            }
+        }
+    }
+
+    &__prev {
+        left: -20px;
+    }
+
+    &__next {
+        right: -20px;
+    }
+}

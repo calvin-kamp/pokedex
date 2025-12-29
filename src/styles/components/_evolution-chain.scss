@@ -1,0 +1,98 @@
+@use '@styles/utils' as *;
+
+.evolution-chain {
+    @include flex(column, nowrap, space-between, center);
+
+    @include breakpoint(md) {
+        flex-direction: row;
+    }
+
+    &__stage {
+        position: relative;
+        margin-bottom: 64px;
+        text-align: center;
+
+        &:last-of-type {
+            margin-bottom: 0;
+
+            &::after {
+                content: none;
+            }
+        }
+
+        @include breakpoint(md) {
+            margin-bottom: 0;
+            text-align: left;
+        }
+
+        &::after {
+            position: absolute;
+            left: 50%;
+            bottom: -32px;
+            transform: translate(-50%, 50%) rotate(90deg);
+            width: 36px;
+            height: 36px;
+            background-size: cover;
+            background-image: url('/icons/chevron-right.svg');
+            background-repeat: no-repeat;
+            content: '';
+
+            @include breakpoint(md) {
+                position: absolute;
+                left: calc(100% + 33.5px);
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        &:has(+ .evolution-chain__stage--branch) {
+            .evolution-card {
+                @include breakpoint(md) {
+                    min-width: 120px;
+                }
+            }
+        }
+
+        &--branch {
+            .evolution-chain {
+                &__item {
+                    margin: 0 auto 32px;
+
+                    @include breakpoint(md) {
+                        margin: 0 0 32px;
+                    }
+
+                    .evolution-card {
+                        min-width: 90px;
+
+                        &__image {
+                            width: 90px;
+                            height: 90px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &__single {
+        height: 100%;
+    }
+
+    &__row {
+        @include flex(row, wrap, center);
+
+        @include breakpoint(md) {
+            justify-content: space-between;
+            padding-left: 70px;
+        }
+    }
+
+    &__item {
+        margin: 0 auto 32px;
+
+        @include breakpoint(md) {
+            margin: 0 0 32px;
+        }
+    }
+}
