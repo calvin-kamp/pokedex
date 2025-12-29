@@ -1,11 +1,22 @@
-import type {
-    PokemonDialogTabKey,
-    PokemonDialogData,
-    EvolutionCard,
-    EvolutionCardsStage,
-} from '@scripts/interfaces/templates/pokemon-dialog'
+import type { PokemonModel } from '@scripts/models/pokemon-model'
+import type { SpeciesModel } from '@scripts/models/species-model'
+import type { TypeModel } from '@scripts/models/type-model'
+import type { EvolutionChainModel } from '@scripts/models/evolution-chain-model'
 
-export type { PokemonDialogTabKey, PokemonDialogData, EvolutionCard, EvolutionCardsStage }
+export type EvolutionCard = {
+    pokemon: PokemonModel
+    species: SpeciesModel
+}
+
+export type EvolutionCardsStage = EvolutionCard | EvolutionCard[]
+
+export type PokemonDialogData = {
+    pokemon: PokemonModel
+    species: SpeciesModel
+    types: TypeModel[]
+    evolutionChain: EvolutionChainModel
+    evolutionStages: EvolutionCardsStage[]
+}
 
 export interface PokemonDialog {
     vars: {
@@ -15,6 +26,7 @@ export interface PokemonDialog {
             closeButton: string
             prevButton: string
             nextButton: string
+            evolutionCard: string
         }
 
         attributes: {
@@ -23,11 +35,10 @@ export interface PokemonDialog {
 
         pokemonId: number
         pokemonIds: number[]
-
-        activeTab: PokemonDialogTabKey
     }
 
     init(): void
+    refreshOpenDialog(): void
     setPokemonIds(pokemonIds: number[]): void
     getNeighborIds(currentId: number): { prevId: number | null; nextId: number | null }
     setAttributes($pokemonDialog: HTMLDialogElement): void
