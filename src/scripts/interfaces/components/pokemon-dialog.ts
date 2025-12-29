@@ -1,14 +1,11 @@
-import type { PokemonModel } from '@scripts/models/pokemon-model'
-import type { SpeciesModel } from '@scripts/models/species-model'
-import type { TypeModel } from '@scripts/models/type-model'
-import type { EvolutionChainModel } from '@scripts/models/evolution-chain-model'
+import type {
+    PokemonDialogTabKey,
+    PokemonDialogData,
+    EvolutionCard,
+    EvolutionCardsStage,
+} from '@scripts/interfaces/templates/pokemon-dialog'
 
-export type PokemonDialogData = {
-    pokemon: PokemonModel
-    species: SpeciesModel
-    types: TypeModel[]
-    evolutionChain: EvolutionChainModel
-}
+export type { PokemonDialogTabKey, PokemonDialogData, EvolutionCard, EvolutionCardsStage }
 
 export interface PokemonDialog {
     vars: {
@@ -26,6 +23,8 @@ export interface PokemonDialog {
 
         pokemonId: number
         pokemonIds: number[]
+
+        activeTab: PokemonDialogTabKey
     }
 
     init(): void
