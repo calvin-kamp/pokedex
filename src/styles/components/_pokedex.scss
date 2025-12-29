@@ -34,8 +34,11 @@
     }
 
     &__item {
-        display: flex;
         margin-bottom: 16px;
+
+        @include breakpoint(xl) {
+            display: flex;
+        }
     }
 
     &__load-more {
