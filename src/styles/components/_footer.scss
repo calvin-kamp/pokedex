@@ -1,0 +1,14 @@
+@use '@styles/utils' as *;
+
+.footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: $footer-height;
+    background-color: var(--color-body-background);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+    z-index: $z-index-2;
+    @include flex(row, wrap, center, center);
+}
