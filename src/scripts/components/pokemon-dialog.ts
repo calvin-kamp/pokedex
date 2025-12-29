@@ -1,6 +1,9 @@
 import type {
     PokemonDialog,
     PokemonDialogData,
+    EvolutionCardsStage,
+    EvolutionCard,
+    PokemonDialogTabKey,
 } from '@scripts/interfaces/components/pokemon-dialog'
 import { fetchPokemon } from '@scripts/api/pokemon.api'
 import { PokemonModel } from '@scripts/models/pokemon-model'
@@ -10,7 +13,61 @@ import { fetchSpecies } from '@scripts/api/species.api'
 import { SpeciesModel } from '@scripts/models/species-model'
 import { fetchEvolutionChain } from '@scripts/api/evolution-chain.api'
 import { EvolutionChainModel } from '@scripts/models/evolution-chain-model'
-import { pokemonDetailTemplate } from '../templates/pokemon-detail'
+import { pokemonDetailTemplate } from '@scripts/templates/pokemon-detail'
+import type { EvolutionStage } from '@scripts/interfaces/domain/evolution-chain'
+import type { NamedResource } from '@scripts/interfaces/common/resources'
+
+const resolveEvolutionCard = async (resource: NamedResource): Promise<EvolutionCard> => {
+    const [pokemonData, speciesData] = await Promise.all([
+        fetchPokemon(`pokemon/${resource.name}`),
+        fetchSpecies(resource.url),
+    ])
+
+    return {
+        pokemon: new PokemonModel(pokemonData),
+        species: new SpeciesModel(speciesData),
+    }
+}
+
+const resolveEvolutionStages = async (stages: EvolutionStage[]): Promise<EvolutionCardsStage[]> => {
+    return Promise.all(
+        stages.map(async (stage) => {
+            if (Array.isArray(stage)) {
+                return Promise.all(stage.map((r) => resolveEvolutionCard(r)))
+            }
+
+            return resolveEvolutionCard(stage)
+        })
+    )
+}
+
+const activateTab = ($root: HTMLElement, tab: PokemonDialogTabKey): void => {
+    const $tabs = $root.querySelector<HTMLElement>('[data-component="pokemon-tabs"]')
+    if (!$tabs) {
+        return
+    }
+
+    const $buttons = Array.from($tabs.querySelectorAll<HTMLButtonElement>('[data-pokemon-tab]'))
+    const $panels = Array.from($tabs.querySelectorAll<HTMLElement>('[data-pokemon-tab-panel]'))
+
+    $buttons.forEach(($btn) => {
+        const key = $btn.getAttribute('data-pokemon-tab') as PokemonDialogTabKey | null
+        const isActive = key === tab
+
+        $btn.classList.toggle('pokemon-tabs__tab--active', isActive)
+        $btn.setAttribute('aria-selected', String(isActive))
+        $btn.tabIndex = isActive ? 0 : -1
+    })
+
+    $panels.forEach(($panel) => {
+        const key = $panel.getAttribute('data-pokemon-tab-panel') as PokemonDialogTabKey | null
+        const isActive = key === tab
+
+        $panel.classList.toggle('pokemon-tabs__panel--active', isActive)
+        $panel.hidden = !isActive
+        $panel.setAttribute('aria-hidden', String(!isActive))
+    })
+}
 
 export const pokemonDialog: PokemonDialog = {
     vars: {
@@ -28,6 +85,8 @@ export const pokemonDialog: PokemonDialog = {
 
         pokemonId: 0,
         pokemonIds: [] as number[],
+
+        activeTab: 'overview',
     },
 
     init(): void {
@@ -119,19 +178,45 @@ export const pokemonDialog: PokemonDialog = {
         $nextBtn?.addEventListener('click', () => {
             this.loadNextPokemon($pokemonDialog)
         })
+
+        $pokemonDialog.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement
+
+            const $tabBtn = target.closest<HTMLButtonElement>('[data-pokemon-tab]')
+            if ($tabBtn) {
+                const tab = $tabBtn.getAttribute('data-pokemon-tab') as PokemonDialogTabKey | null
+                if (!tab) {
+                    return
+                }
+
+                this.vars.activeTab = tab
+                activateTab($pokemonDialog, tab)
+                return
+            }
+
+            const $card = target.closest<HTMLElement>('.evolution-chain__card')
+            if (!$card) {
+                return
+            }
+
+            const id = Number($card.getAttribute(this.vars.attributes.pokemonId))
+            if (!Number.isFinite(id) || id <= 0) {
+                return
+            }
+
+            this.navigateTo($pokemonDialog, id)
+        })
     },
 
     loadPreviousPokemon($pokemonDialog: HTMLDialogElement): void {
         const $prevBtn = $pokemonDialog.querySelector<HTMLButtonElement>(
             this.vars.queries.prevButton
         )
-
         if (!$prevBtn) {
             return
         }
 
         const prevId = Number($prevBtn.getAttribute(this.vars.attributes.pokemonId))
-
         if (!prevId) {
             return
         }
@@ -143,13 +228,11 @@ export const pokemonDialog: PokemonDialog = {
         const $nextBtn = $pokemonDialog.querySelector<HTMLButtonElement>(
             this.vars.queries.nextButton
         )
-
         if (!$nextBtn) {
             return
         }
 
         const nextId = Number($nextBtn.getAttribute(this.vars.attributes.pokemonId))
-
         if (!nextId) {
             return
         }
@@ -165,7 +248,6 @@ export const pokemonDialog: PokemonDialog = {
 
     loadPokemonData($pokemonDialog: HTMLDialogElement, pokemonId: number): void {
         const $content = $pokemonDialog.querySelector<HTMLDivElement>(this.vars.queries.content)
-
         if (!$content) {
             return
         }
@@ -177,16 +259,14 @@ export const pokemonDialog: PokemonDialog = {
                 const pokemon = new PokemonModel(pokemonData)
 
                 const typesPromise = Promise.all(
-                    pokemon.types.map((t) => {
-                        return fetchType(t.url).then((typeData) => {
-                            return new TypeModel(typeData)
-                        })
-                    })
+                    pokemon.types.map((t) =>
+                        fetchType(t.url).then((typeData) => new TypeModel(typeData))
+                    )
                 )
 
-                const speciesPromise = fetchSpecies(pokemonId).then((speciesData) => {
-                    return new SpeciesModel(speciesData)
-                })
+                const speciesPromise = fetchSpecies(pokemonId).then(
+                    (speciesData) => new SpeciesModel(speciesData)
+                )
 
                 Promise.all([typesPromise, speciesPromise])
                     .then(([types, species]) => {
@@ -194,46 +274,46 @@ export const pokemonDialog: PokemonDialog = {
                             .then((evolutionChainData) => {
                                 const evolutionChain = new EvolutionChainModel(evolutionChainData)
 
-                                const dialogData: PokemonDialogData = {
-                                    pokemon,
-                                    species,
-                                    types,
-                                    evolutionChain,
-                                }
+                                resolveEvolutionStages(evolutionChain.evolutions)
+                                    .then((evolutionStages) => {
+                                        const dialogData: PokemonDialogData = {
+                                            pokemon,
+                                            species,
+                                            types,
+                                            evolutionChain,
+                                            evolutionStages,
+                                        }
 
-                                const templateEl = document.createElement('template')
+                                        const templateEl = document.createElement('template')
+                                        templateEl.innerHTML = pokemonDetailTemplate(
+                                            dialogData.pokemon,
+                                            dialogData.species,
+                                            dialogData.types,
+                                            dialogData.evolutionStages
+                                        )
 
-                                templateEl.innerHTML = pokemonDetailTemplate(
-                                    dialogData.pokemon,
-                                    dialogData.species,
-                                    dialogData.evolutionChain,
-                                    dialogData.types
-                                )
+                                        $content.appendChild(templateEl.content.cloneNode(true))
 
-                                $content.appendChild(templateEl.content.cloneNode(true))
+                                        activateTab($pokemonDialog, this.vars.activeTab)
+                                    })
+                                    .catch((error) => console.error(error))
                             })
-                            .catch((error) => {
-                                console.error(error)
-                            })
+                            .catch((error) => console.error(error))
                     })
-                    .catch((error) => {
-                        console.error(error)
-                    })
+                    .catch((error) => console.error(error))
             })
-            .catch((error) => {
-                console.error(error)
-            })
+            .catch((error) => console.error(error))
     },
 
     openDialog(id: number, pokemonIds: number[]): void {
         const $pokemonDialog = document.querySelector<HTMLDialogElement>(
             this.vars.queries.component
         )
-
         if (!$pokemonDialog) {
             return
         }
 
+        this.vars.activeTab = 'overview'
         this.setPokemonIds(pokemonIds)
         this.navigateTo($pokemonDialog, id)
 
