@@ -89,6 +89,7 @@ button,
 .button {
     display: inline-block;
     border: 1px solid transparent;
+    min-height: 40px;
     cursor: pointer;
     text-decoration: none;
     transition: all $transition-time ease;
@@ -98,6 +99,19 @@ button,
     white-space: nowrap;
     overflow: hidden;
     background-color: transparent;
+
+    &--primary {
+        background-color: var(--color-primary);
+
+        &:not([disabled]) {
+            &:hover {
+                background-color: var(--color-primary-hover);
+            }
+        }
+    }
+
+    &[disabled] {
+    }
 }
 
 /* Images */
@@ -122,6 +136,27 @@ ul {
     list-style: none;
 }
 
+/* Dialog */
+dialog {
+    margin: auto;
+
+    &::backdrop {
+        background-color: var(--color-black);
+        opacity: 0.5;
+    }
+}
+
+/* Main */
+
 main {
-    min-height: calc(100vh - 139px);
+    min-height: calc(100vh - $header-height-mobile - $footer-height-mobile);
+    padding-top: 400px;
+
+    @include breakpoint(md) {
+        min-height: calc(100vh - $header-height-tablet - $footer-height-tablet);
+    }
+
+    @include breakpoint(lg) {
+        min-height: calc(100vh - $header-height-desktop - $footer-height-desktop);
+    }
 }
